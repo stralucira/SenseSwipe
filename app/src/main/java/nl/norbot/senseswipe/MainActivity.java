@@ -17,4 +17,14 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(this, MazeActivity.class);
         startActivity(intent);
     }
+
+    public void startCameraActivity(View view) {
+        Intent intent = new Intent(this, CameraActivity.class);
+        startActivity(intent);
+    }
+
+    public void startTypingActivity(View view) {
+        Intent intent = new Intent(this, TypingActivity.class);
+        startActivity(intent);
+    }
 }
