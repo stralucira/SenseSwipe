@@ -16,6 +16,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".MazeActivity"
+            android:label="@string/title_activity_maze"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.norbot.senseswipe.MainActivity" />
+        </activity>
+        <activity
+            android:name=".CameraActivity"
+            android:label="@string/title_activity_camera"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.norbot.senseswipe.MainActivity" />
+        </activity>
+        <activity
+            android:name=".TypingActivity"
+            android:label="@string/title_activity_typing"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="nl.norbot.senseswipe.MainActivity" />
+        </activity>
     </application>
 
 </manifest>
