@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">SenseSwipe</string>
+    <string name="main_maze_button">Maze</string>
+    <string name="main_camera_button">Camera</string>
+    <string name="main_typing_button">Typing</string>
 </resources>
