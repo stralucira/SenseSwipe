@@ -22,7 +22,7 @@ public class MazeActivity extends AppCompatActivity {
     private Bitmap bitmap;
 
     private Point currentPosition = new Point();
-    private int gridsize = 3;
+    private int gridsize = 7;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class MazeActivity extends AppCompatActivity {
 
     public void moveright(View view){
         ImageView image = (ImageView) view;
-        currentPosition.x += image.getWidth() / 5;
+        currentPosition.x += image.getWidth() / gridsize;
         draw(image);
     }
 
@@ -65,14 +65,24 @@ public class MazeActivity extends AppCompatActivity {
         int screenWidth = view.getWidth();
         int screenHeight = view.getHeight();
 
-        Log.d("Screenwidth", String.valueOf(screenWidth));
-
         bitmap = Bitmap.createBitmap(screenWidth, screenHeight, Bitmap.Config.ARGB_8888);
 
         view.setImageBitmap(bitmap);
         canvas = new Canvas(bitmap);
 
-        //canvas.drawColor(Color.RED); //Background color
+        //Draw the background
+        //canvas.drawColor(Color.RED);
+
+        //Draw the playing field
+        for (int i = 0; i < gridsize; i++)
+        {
+            for (int j = 0; j < gridsize; j++)
+            {
+                canvas.drawCircle(i * screenWidth / gridsize, j * screenHeight / gridsize, 5, paint);
+            }
+        }
+
+        //Draw the player
         canvas.drawCircle(currentPosition.x, currentPosition.y, 50, paint);
 
         view.invalidate();
