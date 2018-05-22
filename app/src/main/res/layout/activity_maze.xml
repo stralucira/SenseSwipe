@@ -6,4 +6,10 @@
     android:layout_height="match_parent"
     tools:context=".MazeActivity">
 
+    <ImageView
+        android:id="@+id/maze_imageviewer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:onClick="moveright"
+        app:srcCompat="@android:drawable/btn_star_big_on" />
 </android.support.design.widget.CoordinatorLayout>
