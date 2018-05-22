@@ -245,4 +245,5 @@ public class MazeActivity extends AppCompatActivity {
         }
 
     }
+    //TODO: implement controls. Map input (screen & sensor) to moveup, movedown, moveright, moveleft
 }
