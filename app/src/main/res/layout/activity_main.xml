@@ -15,6 +15,7 @@
         android:layout_marginTop="16dp"
         android:onClick="startMazeActivity"
         android:text="@string/main_maze_button"
+        android:enabled="false"
         app:layout_constraintBottom_toTopOf="@+id/button_camera"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -29,6 +30,7 @@
         android:layout_marginStart="16dp"
         android:onClick="startCameraActivity"
         android:text="@string/main_camera_button"
+        android:enabled="false"
         app:layout_constraintBottom_toTopOf="@+id/button_typing"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -42,8 +44,34 @@
         android:layout_marginStart="16dp"
         android:onClick="startTypingActivity"
         android:text="@string/main_typing_button"
+        android:enabled="false"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_camera" />
+
+    <EditText
+        android:id="@+id/edittext_subject_number"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:hint="@string/main_subject_number_hint"
+        android:inputType="number"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_typing"
+        />
+
+    <Button
+        android:id="@+id/button_save_subject_number"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:onClick="saveSubjectNumber"
+        android:text="@string/main_save_subject_number_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/edittext_subject_number" />
 
 </android.support.constraint.ConstraintLayout>
