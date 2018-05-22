@@ -1,5 +1,7 @@
 package nl.norbot.senseswipe;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -9,5 +11,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        DatabaseHelper mDbHelper = new DatabaseHelper(getApplicationContext());
+
+        // Gets the data repository in write mode
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+
+        // Create a new map of values, where column names are the keys
+        ContentValues values = new ContentValues();
+        values.put(DBContract.DBEntry.COLUMN_NAME_TITLE, "Title");
+        values.put(DBContract.DBEntry.COLUMN_NAME_SUBTITLE, "Subtitle");
+
+        // Insert the new row, returning the primary key value of the new row
+        long newRowId = db.insert(DBContract.DBEntry.TABLE_NAME, null, values);
+
     }
 }
