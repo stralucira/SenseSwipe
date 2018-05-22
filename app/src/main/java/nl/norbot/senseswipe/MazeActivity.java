@@ -14,6 +14,8 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
+
 public class MazeActivity extends AppCompatActivity {
     boolean initialized = false;
 
@@ -22,7 +24,10 @@ public class MazeActivity extends AppCompatActivity {
     private Bitmap bitmap;
 
     private Point currentPosition = new Point();
-    private int gridsize = 7;
+    private int gridsize = 8;
+    private Point startpos;
+    private Point finishpos;
+    ArrayList<Point> walls = getmaze(0);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,25 +46,18 @@ public class MazeActivity extends AppCompatActivity {
         super.onWindowFocusChanged(hasFocus);
         if (hasFocus) {
             ImageView img = (ImageView) findViewById(R.id.maze_imageviewer);
-            Log.d("Screenwidth", "width : " + img.getWidth());
 
             int screenwidth = img.getWidth();
             int screenheight = img.getHeight();
 
             if (initialized == false) {
-                currentPosition.x = screenwidth / 2;
-                currentPosition.y = screenheight / 2;
+                currentPosition = startpos;
             }
             draw(img);
             initialized = true;
         }
     }
 
-    public void moveright(View view){
-        ImageView image = (ImageView) view;
-        currentPosition.x += image.getWidth() / gridsize;
-        draw(image);
-    }
 
     public void draw(ImageView view) {
         int screenWidth = view.getWidth();
@@ -73,7 +71,17 @@ public class MazeActivity extends AppCompatActivity {
         //Draw the background
         //canvas.drawColor(Color.RED);
 
-        //Draw the playing field
+        //Draw the walls
+        paint.setColor(Color.rgb(90, 90, 90));
+        for (Point wall : walls){
+            Rect rectangle = new Rect(wall.x * (screenWidth / gridsize), wall.y * (screenHeight / gridsize), (wall.x + 1) * (screenWidth / gridsize), (wall.y + 1) * (screenHeight / gridsize));
+            canvas.drawRect(rectangle, paint);
+        }
+        paint.setColor(Color.rgb(0, 0, 0));
+
+
+        //Draw the playing field as a grid
+        /*
         for (int i = 0; i < gridsize; i++)
         {
             for (int j = 0; j < gridsize; j++)
@@ -81,13 +89,139 @@ public class MazeActivity extends AppCompatActivity {
                 canvas.drawCircle(i * screenWidth / gridsize, j * screenHeight / gridsize, 5, paint);
             }
         }
+        */
 
         //Draw the player
-        canvas.drawCircle(currentPosition.x, currentPosition.y, 50, paint);
+        paint.setColor(Color.rgb(0,0,100));
+        Point playerpixelpos = convertToPixelCoordinates(currentPosition, screenWidth, screenHeight);
+        canvas.drawCircle(playerpixelpos.x, playerpixelpos.y, 50, paint);
+        paint.setColor(Color.rgb(0,0,0));
+
+        //Draw the finish
+        paint.setColor(Color.rgb(0,255,0));
+        Point finishpixelpos = convertToPixelCoordinates(finishpos, screenWidth, screenHeight);
+        canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
+        paint.setColor(Color.rgb(0,0,0));
 
         view.invalidate();
 
     }
 
+    ArrayList<Point> getmaze(int num) {
+        if (num == 0) {
+            int width = 8;
+            int height = 8;
 
+            ArrayList<Point> walls = new ArrayList<>();
+
+            //Outer walls
+            for (int i = 0; i < width; i++) {
+                for (int j = 0; j < height; j++) {
+                    if (i == 0 || i == width - 1 || j == 0 || j == height - 1) {
+                        walls.add(new Point(i, j));
+                    }
+                }
+            }
+
+            //Maze walls
+            walls.add(new Point(4, 1));
+            walls.add(new Point(5, 1));
+            walls.add(new Point(6, 1));
+
+            walls.add(new Point(1, 2));
+            walls.add(new Point(2, 2));
+
+            walls.add(new Point(2, 3));
+            walls.add(new Point(3, 3));
+            walls.add(new Point(4, 3));
+            walls.add(new Point(5, 3));
+
+            walls.add(new Point(2, 4));
+
+            walls.add(new Point(2, 5));
+            walls.add(new Point(4, 5));
+            walls.add(new Point(5, 5));
+            walls.add(new Point(6, 5));
+
+            startpos = new Point(1, 1);
+            finishpos = new Point(1, 3);
+
+
+            return walls;
+        } else {
+            //TODO: add more mazes.
+        }
+        return new ArrayList<Point>();
+    }
+
+    Point convertToPixelCoordinates(Point in, int screenwidth, int screenheight){
+        return new Point(in.x * screenwidth / gridsize + (int)(0.5 * (screenwidth / gridsize)), in.y * screenheight / gridsize + (int)(0.5 * (screenheight / gridsize)));
+    }
+
+    private boolean isWall(Point point){
+        if(walls.indexOf(new Point(currentPosition.x + 1, currentPosition.y)) >= 0){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
+    public void moveright(View view){
+        Point newposition = new Point(currentPosition.x + 1, currentPosition.y);
+
+        if(!isWall(newposition)){
+            currentPosition = newposition;
+
+            ImageView image = (ImageView) view;
+            draw(image);
+        }
+        else{
+            //TODO: what needs to happen when the player hits a wall?
+        }
+
+    }
+
+    public void moveleft(View view){
+        Point newposition = new Point(currentPosition.x - 1, currentPosition.y);
+
+        if(!isWall(newposition)){
+            currentPosition = newposition;
+
+            ImageView image = (ImageView) view;
+            draw(image);
+        }
+        else{
+            //TODO: what needs to happen when the player hits a wall?
+        }
+
+    }
+    public void moveup(View view){
+        Point newposition = new Point(currentPosition.x, currentPosition.y - 1);
+
+        if(!isWall(newposition)){
+            currentPosition = newposition;
+
+            ImageView image = (ImageView) view;
+            draw(image);
+        }
+        else{
+            //TODO: what needs to happen when the player hits a wall?
+        }
+
+    }
+    public void movedown(View view){
+        Point newposition = new Point(currentPosition.x, currentPosition.y + 1);
+
+        if(!isWall(newposition)){
+            currentPosition = newposition;
+
+            ImageView image = (ImageView) view;
+            draw(image);
+        }
+        else{
+            //TODO: what needs to happen when the player hits a wall?
+        }
+
+    }
 }
