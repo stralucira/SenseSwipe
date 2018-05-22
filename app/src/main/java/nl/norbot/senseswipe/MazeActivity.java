@@ -167,6 +167,10 @@ public class MazeActivity extends AppCompatActivity {
         }
     }
 
+    private boolean isFinish(Point point){
+        return (point == finishpos);
+    }
+
     public void moveright(View view){
         Point newposition = new Point(currentPosition.x + 1, currentPosition.y);
 
@@ -178,6 +182,11 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //TODO: what needs to happen when the player hits a wall?
+        }
+
+        if (isFinish(currentPosition)) {
+            //TODO: what needs to happen when the player finishes?
+
         }
 
     }
@@ -194,6 +203,10 @@ public class MazeActivity extends AppCompatActivity {
         else{
             //TODO: what needs to happen when the player hits a wall?
         }
+        if (isFinish(currentPosition)) {
+            //TODO: what needs to happen when the player finishes?
+
+        }
 
     }
     public void moveup(View view){
@@ -208,6 +221,10 @@ public class MazeActivity extends AppCompatActivity {
         else{
             //TODO: what needs to happen when the player hits a wall?
         }
+        if (isFinish(currentPosition)) {
+            //TODO: what needs to happen when the player finishes?
+
+        }
 
     }
     public void movedown(View view){
@@ -221,6 +238,10 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //TODO: what needs to happen when the player hits a wall?
+        }
+        if (isFinish(currentPosition)) {
+            //TODO: what needs to happen when the player finishes?
+
         }
 
     }
