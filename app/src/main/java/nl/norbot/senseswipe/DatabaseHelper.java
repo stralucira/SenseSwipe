@@ -11,8 +11,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + DBContract.DBEntry.TABLE_NAME + " (" +
                     DBContract.DBEntry._ID + " INTEGER PRIMARY KEY," +
-                    DBContract.DBEntry.COLUMN_NAME_TITLE + " TEXT," +
-                    DBContract.DBEntry.COLUMN_NAME_SUBTITLE + " TEXT)";
+                    DBContract.DBEntry.COLUMN_NAME_CREATEDAT + " DATETIME DEFAULT CURRENT_TIMESTAMP," +
+                    DBContract.DBEntry.COLUMN_NAME_TASK + " TEXT," +
+                    DBContract.DBEntry.COLUMN_NAME_VALUE + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + DBContract.DBEntry.TABLE_NAME;
