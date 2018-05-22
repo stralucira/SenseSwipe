@@ -2,6 +2,7 @@ package nl.norbot.senseswipe;
 
 import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.FingerprintGestureController;
+import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 import android.view.accessibility.AccessibilityEvent;
@@ -14,6 +15,12 @@ public class FingerprintGestureService extends AccessibilityService {
 
     @Override
     public void onAccessibilityEvent(AccessibilityEvent accessibilityEvent) {
+    }
+
+    @Override
+    protected boolean onGesture(int gestureId) {
+        Log.d(TAG, "onGesture " + gestureId);
+        return super.onGesture(gestureId);
     }
 
     @Override
@@ -34,6 +41,9 @@ public class FingerprintGestureService extends AccessibilityService {
                     @Override
                     public void onGestureDetected(int gesture) {
                         super.onGestureDetected(gesture);
+                        Intent intent = new Intent("FINGERPRINT_GESTURE_DETECTED");
+                        intent.putExtra("gesture_id", gesture);
+                        sendBroadcast(intent);
                         Log.d(TAG, "onGestureDetected " + gesture);
                     }
                 };
