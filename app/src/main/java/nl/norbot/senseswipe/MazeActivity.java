@@ -1,5 +1,9 @@
 package nl.norbot.senseswipe;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
@@ -17,6 +21,20 @@ import android.widget.LinearLayout;
 import java.util.ArrayList;
 
 public class MazeActivity extends AppCompatActivity {
+    private static final String TAG = MazeActivity.class.getSimpleName();
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                Log.d(TAG, Integer.toString(intent.getIntExtra("gesture_id", 0)));
+
+                // TODO: Implement input handling here.
+                // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
+            } catch (Exception e){
+                Log.d(TAG, e.toString());
+            }
+        }
+    };
     boolean initialized = false;
 
     private Canvas canvas;
@@ -33,6 +51,7 @@ public class MazeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maze);
+        Log.d(TAG, "Maze Activity created.");
 
         ImageView screen = findViewById(R.id.maze_imageviewer);
         Log.d("Screenwidth", String.valueOf(screen.getWidth()));
@@ -188,7 +207,6 @@ public class MazeActivity extends AppCompatActivity {
             //TODO: what needs to happen when the player finishes?
 
         }
-
     }
 
     public void moveleft(View view){
@@ -246,4 +264,17 @@ public class MazeActivity extends AppCompatActivity {
 
     }
     //TODO: implement controls. Map input (screen & sensor) to moveup, movedown, moveright, moveleft
+
+protected void onResume() {
+        super.onResume();
+
+        registerReceiver(receiver, new IntentFilter("FINGERPRINT_GESTURE_DETECTED"));
+    }
+
+    protected void onPause() {
+        super.onPause();
+
+        Log.d(TAG, "Unregistering receiver.");
+        unregisterReceiver(receiver);
+    }
 }
