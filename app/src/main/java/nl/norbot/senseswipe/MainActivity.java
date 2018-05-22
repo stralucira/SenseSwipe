@@ -14,6 +14,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "Main Activity created.");
+        Intent fingerprintGestureIntent = new Intent(this, FingerprintGestureService.class);
+        startService(fingerprintGestureIntent);
     }
 
     public void startMazeActivity(View view) {
