@@ -27,6 +27,20 @@ public class MazeActivity extends AppCompatActivity {
         public void onReceive(Context context, Intent intent) {
             try {
                 Log.d(TAG, Integer.toString(intent.getIntExtra("gesture_id", 0)));
+                int direction = intent.getIntExtra("gesture_id", 0);
+
+                if(direction == 2){
+                    moveleft(findViewById(R.id.maze_imageviewer));
+                }
+                if(direction == 8){
+                    movedown(findViewById(R.id.maze_imageviewer));
+                }
+                if(direction == 1){
+                    moveright(findViewById(R.id.maze_imageviewer));
+                }
+                if(direction == 4){
+                    moveup(findViewById(R.id.maze_imageviewer));
+                }
 
                 // TODO: Implement input handling here.
                 // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
