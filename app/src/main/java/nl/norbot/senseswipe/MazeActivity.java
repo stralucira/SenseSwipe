@@ -11,6 +11,8 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -61,6 +63,9 @@ public class MazeActivity extends AppCompatActivity {
     private Point finishpos;
     ArrayList<Point> walls = getmaze(0);
 
+    private Vibrator v;
+    int vibrationlength = 200;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -71,6 +76,7 @@ public class MazeActivity extends AppCompatActivity {
         Log.d("Screenwidth", String.valueOf(screen.getWidth()));
 
         Rect vierkantje = new Rect();
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
         //draw(screen);
     }
 
@@ -219,7 +225,8 @@ public class MazeActivity extends AppCompatActivity {
             draw(image);
         }
         else{
-            //TODO: what needs to happen when the player hits a wall?
+            //Player hit a wall, vibrate
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
 
         if (isFinish(currentPosition)) {
@@ -239,7 +246,8 @@ public class MazeActivity extends AppCompatActivity {
             draw(image);
         }
         else{
-            //TODO: what needs to happen when the player hits a wall?
+            //Player hit a wall, vibrate
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
@@ -258,7 +266,8 @@ public class MazeActivity extends AppCompatActivity {
             draw(image);
         }
         else{
-            //TODO: what needs to happen when the player hits a wall?
+            //Player hit a wall, vibrate
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
@@ -277,7 +286,8 @@ public class MazeActivity extends AppCompatActivity {
             draw(image);
         }
         else{
-            //TODO: what needs to happen when the player hits a wall?
+            //Player hit a wall, vibrate.
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
