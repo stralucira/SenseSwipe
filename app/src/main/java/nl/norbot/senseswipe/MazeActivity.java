@@ -42,7 +42,7 @@ public class MazeActivity extends AppCompatActivity {
                     moveup(findViewById(R.id.maze_imageviewer));
                 }
 
-                // TODO: Implement input handling here.
+                Log.d("MW", "Current position: " + currentPosition.toString());
                 // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
             } catch (Exception e){
                 Log.d(TAG, e.toString());
@@ -192,8 +192,11 @@ public class MazeActivity extends AppCompatActivity {
     }
 
     private boolean isWall(Point point){
-        if(walls.indexOf(new Point(currentPosition.x + 1, currentPosition.y)) >= 0){
+
+        if(walls.indexOf(point) >= 0){
+            //Log.d("MW", "Current position is wall!");
             return true;
+
         }
         else{
             return false;
@@ -206,6 +209,8 @@ public class MazeActivity extends AppCompatActivity {
 
     public void moveright(View view){
         Point newposition = new Point(currentPosition.x + 1, currentPosition.y);
+
+        //Log.d("MW", "moveright");
 
         if(!isWall(newposition)){
             currentPosition = newposition;
@@ -225,6 +230,7 @@ public class MazeActivity extends AppCompatActivity {
 
     public void moveleft(View view){
         Point newposition = new Point(currentPosition.x - 1, currentPosition.y);
+        //Log.d("MW", "moveleft");
 
         if(!isWall(newposition)){
             currentPosition = newposition;
@@ -243,6 +249,7 @@ public class MazeActivity extends AppCompatActivity {
     }
     public void moveup(View view){
         Point newposition = new Point(currentPosition.x, currentPosition.y - 1);
+        //Log.d("MW", "moveup");
 
         if(!isWall(newposition)){
             currentPosition = newposition;
@@ -261,6 +268,7 @@ public class MazeActivity extends AppCompatActivity {
     }
     public void movedown(View view){
         Point newposition = new Point(currentPosition.x, currentPosition.y + 1);
+        //Log.d("MW", "movedown");
 
         if(!isWall(newposition)){
             currentPosition = newposition;
