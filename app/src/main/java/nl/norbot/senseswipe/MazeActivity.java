@@ -13,8 +13,12 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.text.style.TtsSpan;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ImageView;
@@ -22,7 +26,7 @@ import android.widget.LinearLayout;
 
 import java.util.ArrayList;
 
-public class MazeActivity extends AppCompatActivity {
+public class MazeActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
     private static final String TAG = MazeActivity.class.getSimpleName();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -66,6 +70,9 @@ public class MazeActivity extends AppCompatActivity {
     private Vibrator v;
     int vibrationlength = 200;
 
+    private GestureDetectorCompat mDetector;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,6 +84,8 @@ public class MazeActivity extends AppCompatActivity {
 
         Rect vierkantje = new Rect();
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+        mDetector = new GestureDetectorCompat(this,this);
         //draw(screen);
     }
 
@@ -308,5 +317,65 @@ protected void onResume() {
 
         Log.d(TAG, "Unregistering receiver.");
         unregisterReceiver(receiver);
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        if (this.mDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    public void onShowPress(MotionEvent event) {
+        //Log.d(DEBUG_TAG, "onShowPress: " + event.toString());
+        //return false;
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        Log.d("MW", "tap up gesture received");
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        Log.d("MW", "Fling gesture received");
+        if(Math.abs(velocityX) > Math.abs(velocityY)){
+            //Move along X-axis
+            if (velocityX > 0){
+                moveright(findViewById(R.id.maze_imageviewer));
+            }
+            else{
+                moveleft(findViewById(R.id.maze_imageviewer));
+            }
+        }
+        else{
+            //Move along Y-axis
+            if(velocityY > 0){
+                movedown(findViewById(R.id.maze_imageviewer));
+            }
+            else{
+                moveup(findViewById(R.id.maze_imageviewer));
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
     }
 }
