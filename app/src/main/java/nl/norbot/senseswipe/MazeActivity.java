@@ -64,6 +64,7 @@ public class MazeActivity extends AppCompatActivity {
     ArrayList<Point> walls = getmaze(0);
 
     private Vibrator v;
+    int vibrationlength = 200;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -225,7 +226,7 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //Player hit a wall, vibrate
-            v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
 
         if (isFinish(currentPosition)) {
@@ -246,7 +247,7 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //Player hit a wall, vibrate
-            v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
@@ -266,7 +267,7 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //Player hit a wall, vibrate
-            v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
@@ -286,7 +287,7 @@ public class MazeActivity extends AppCompatActivity {
         }
         else{
             //Player hit a wall, vibrate.
-            v.vibrate(VibrationEffect.createOneShot(500,VibrationEffect.DEFAULT_AMPLITUDE));
+            v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
             //TODO: what needs to happen when the player finishes?
