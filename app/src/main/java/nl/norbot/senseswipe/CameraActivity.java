@@ -10,18 +10,51 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.wonderkiln.camerakit.CameraKit;
+import com.wonderkiln.camerakit.CameraKitController;
 import com.wonderkiln.camerakit.CameraView;
 
 public class CameraActivity extends AppCompatActivity {
     private static final String TAG = CameraActivity.class.getSimpleName();
+    private float zoom = 1.0f;
+    private float maxZoom = 10.0f;
+    private float minZoom = 1.0f;
+
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             try {
-                Log.d(TAG, Integer.toString(intent.getIntExtra("gesture_id", 0)));
+                int swipe = intent.getIntExtra("gesture_id", 0);
+                Log.d(TAG, Integer.toString(swipe));
 
                 // TODO: Implement input handling here.
                 // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
+                switch (swipe)
+                {
+                    case (1):
+                        Log.d(TAG, "Swipe right.");
+                        break;
+                    case (2):
+                        Log.d(TAG, "Swipe left.");
+                        break;
+                    case (4):
+                        // Max zoom (Dimas' phone) front: 4.0, back: 8.0
+                        // Log.d(TAG, "Swipe up.");
+                        zoom += .5f;
+                        zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+                        cameraView.setZoom(zoom);
+                        Log.d(TAG, "Zoom: " + zoom);
+                        break;
+                    case (8):
+                        // Log.d(TAG, "Swipe down.");
+                        zoom -= 0.5f;
+                        zoom = Math.max(minZoom, Math.min(maxZoom, zoom));
+                        cameraView.setZoom(zoom);
+                        Log.d(TAG, "Zoom: " + zoom);
+                        break;
+                    default:
+                        break;
+                }
+
             } catch (Exception e){
                 Log.d(TAG, e.toString());
             }
@@ -54,6 +87,8 @@ public class CameraActivity extends AppCompatActivity {
 
         registerReceiver(receiver, new IntentFilter("FINGERPRINT_GESTURE_DETECTED"));
         cameraView.start();
+        //cameraView.setZoom();
+
     }
 
     @Override
