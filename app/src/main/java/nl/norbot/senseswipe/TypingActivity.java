@@ -9,6 +9,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.EditText;
 import android.view.inputmethod.*;
+import android.widget.Button;
+import android.view.View;
+
 
 public class TypingActivity extends AppCompatActivity {
 
@@ -57,7 +60,21 @@ public class TypingActivity extends AppCompatActivity {
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
+        setUpButton();
     }
+
+    private void setUpButton(){
+        Button startButton = findViewById(R.id.button);
+
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.i("Start Button", "start button clicked");
+                //finish();
+            }
+        });
+    }
+
 
     protected void onResume() {
         super.onResume();
