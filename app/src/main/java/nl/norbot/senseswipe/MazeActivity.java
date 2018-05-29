@@ -90,12 +90,17 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     private DatabaseReference databasereference;
 
     private int numberOfErrors = 0;
+    private int id;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maze);
         Log.d(TAG, "Maze Activity created.");
+
+        id = getIntent().getIntExtra("id", 0);
+        usefingerprintgestures = getIntent().getBooleanExtra("useFingerprint", false);
+        usescreengestures = !usefingerprintgestures;
 
         ImageView screen = findViewById(R.id.maze_imageviewer);
         Log.d("Screenwidth", String.valueOf(screen.getWidth()));
@@ -106,7 +111,9 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         mDetector = new GestureDetectorCompat(this,this);
 
         alertbuilder = new AlertDialog.Builder(this);
-        alertbuilder.setMessage("Swipe the screen to move the dot to the finish.");
+
+        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor to move the dot to the finish.");
+        else alertbuilder.setMessage("Swipe the screen to move the dot to the finish.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -116,6 +123,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
         AlertDialog alert11 = alertbuilder.create();
         alert11.show();
+
+
 
         database = FirebaseDatabase.getInstance();
         databasereference = database.getReference();
@@ -257,7 +266,6 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             inputmethod = "screen";
         }
 
-        int id = 69;
         DatabaseReference mazeposition = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(currentmaze));
         mazeposition.child("completionTime").setValue(Float.toString(timediff));
         mazeposition.child("errorRate").setValue(Integer.toString(numberOfErrors));
@@ -544,7 +552,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             startpos = new Point(6,6);
         }
         else{
-            currentmaze = 0;
+            /*currentmaze = 0;
             usefingerprintgestures = true;
             usescreengestures = false;
             walls = getmaze(0);
@@ -558,11 +566,18 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
             AlertDialog alert11 = alertbuilder.create();
             alert11.show();
+            */
+            alertbuilder.setMessage("Finished all mazes");
+            alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
 
+            AlertDialog alert11 = alertbuilder.create();
+            alert11.show();
 
-
-            //TODO: add more mazes
-            //TODO: what happens when all mazes have been completed?
+            //TODO: Call next experiment on completion.
         }
         return walls;
     }
