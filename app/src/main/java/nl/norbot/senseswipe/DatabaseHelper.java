@@ -13,6 +13,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                     DBContract.DBEntry._ID + " INTEGER PRIMARY KEY," +
                     DBContract.DBEntry.COLUMN_NAME_CREATEDAT + " DATETIME DEFAULT CURRENT_TIMESTAMP," +
                     DBContract.DBEntry.COLUMN_NAME_SUBJECT + " TEXT," +
+                    DBContract.DBEntry.COLUMN_NAME_INPUTMETHOD + " TEXT," +
                     DBContract.DBEntry.COLUMN_NAME_TASK + " TEXT," +
                     DBContract.DBEntry.COLUMN_NAME_SUBTASK + " TEXT," +
                     DBContract.DBEntry.COLUMN_NAME_VALUE + " FLOAT)";
