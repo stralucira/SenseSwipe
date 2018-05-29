@@ -2,6 +2,7 @@ package nl.norbot.senseswipe;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
@@ -14,6 +15,7 @@ import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.style.TtsSpan;
 import android.util.Log;
@@ -69,7 +71,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     private Point finishpos;
     ArrayList<Point> walls = getmaze(0);
 
-    private boolean usefingerprintgestures = true;
+    private boolean usefingerprintgestures = false;
     private boolean usescreengestures = true;
 
     private Vibrator v;
@@ -77,6 +79,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
     private GestureDetectorCompat mDetector;
     private int currentmaze = 0;
+
+    private AlertDialog.Builder alertbuilder;
 
 
     @Override
@@ -92,7 +96,18 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         mDetector = new GestureDetectorCompat(this,this);
-        //draw(screen);
+
+        alertbuilder = new AlertDialog.Builder(this);
+        alertbuilder.setMessage("Swipe the screen to move the dot to the finish.");
+        alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog alert11 = alertbuilder.create();
+        alert11.show();
+
     }
 
     public void onWindowFocusChanged(boolean hasFocus) {
@@ -203,7 +218,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
             currentmaze++;
-            startmaze(currentmaze, true, true);
+            startmaze(currentmaze);
         }
     }
 
@@ -224,7 +239,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
             currentmaze++;
-            startmaze(currentmaze, true, true);
+            startmaze(currentmaze);
         }
 
     }
@@ -245,7 +260,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
             currentmaze++;
-            startmaze(currentmaze, true, true);
+            startmaze(currentmaze);
         }
 
     }
@@ -266,7 +281,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
             currentmaze++;
-            startmaze(currentmaze, true, true);
+            startmaze(currentmaze);
         }
 
     }
@@ -302,7 +317,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         Log.d("MW", "tap up gesture received");
-        startmaze(0, true, true);
+        startmaze(0);
         return false;
     }
 
@@ -344,12 +359,9 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         return false;
     }
 
-    public boolean startmaze(int num, boolean acceptscannergestures, boolean acceptscreengestures){
+    public boolean startmaze(int num){
         walls = getmaze(num);
         currentPosition = startpos;
-
-        usefingerprintgestures = acceptscannergestures;
-        usescreengestures = acceptscannergestures;
 
         draw((ImageView)findViewById(R.id.maze_imageviewer));
         return true;
@@ -501,6 +513,23 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             startpos = new Point(6,6);
         }
         else{
+            currentmaze = 0;
+            usefingerprintgestures = true;
+            usescreengestures = false;
+            walls = getmaze(0);
+
+            alertbuilder.setMessage("Now, swipe the fingerprint scanner to move the dot to the finish.");
+            alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                }
+            });
+
+            AlertDialog alert11 = alertbuilder.create();
+            alert11.show();
+
+
+
             //TODO: add more mazes
             //TODO: what happens when all mazes have been completed?
         }
