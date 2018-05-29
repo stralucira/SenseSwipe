@@ -236,6 +236,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         float timediff = currenttime - Mazestarttime;
 
         Log.d("MW", "Maze completed in " + timediff);
+        //TODO: Submit results to database
     }
 
     public void moveup(View view){
