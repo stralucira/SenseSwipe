@@ -26,6 +26,9 @@ import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 public class MazeActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
@@ -83,6 +86,10 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     private AlertDialog.Builder alertbuilder;
 
     private long Mazestarttime;
+    private FirebaseDatabase database;
+    private DatabaseReference databasereference;
+
+    private int numberOfErrors = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +117,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         AlertDialog alert11 = alertbuilder.create();
         alert11.show();
 
+        database = FirebaseDatabase.getInstance();
+        databasereference = database.getReference();
     }
 
 
@@ -198,6 +207,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
 
         if (isFinish(currentPosition)) {
@@ -221,6 +232,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
         }
         if (isFinish(currentPosition)) {
             dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
@@ -236,7 +248,20 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         float timediff = currenttime - Mazestarttime;
 
         Log.d("MW", "Maze completed in " + timediff);
-        //TODO: Submit results to database
+
+        String inputmethod;
+        if(usefingerprintgestures){
+            inputmethod = "fingerprint";
+        }
+        else{
+            inputmethod = "screen";
+        }
+
+        int id = 69;
+        DatabaseReference mazeposition = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(currentmaze));
+        mazeposition.child("completionTime").setValue(Float.toString(timediff));
+        mazeposition.child("errorRate").setValue(Integer.toString(numberOfErrors));
+        //TODO: use id from intent
     }
 
     public void moveup(View view){
@@ -252,6 +277,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
@@ -274,6 +301,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate.
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
         if (isFinish(currentPosition)) {
             dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
@@ -315,7 +344,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         Log.d("MW", "tap up gesture received");
-        startmaze(0);
+        //startmaze(0);
         return false;
     }
 
@@ -360,6 +389,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     public boolean startmaze(int num){
         Log.d("MW", "Timer started");
         Mazestarttime = System.currentTimeMillis();
+        numberOfErrors = 0;
 
         walls = getmaze(num);
         currentPosition = startpos;
