@@ -14,6 +14,10 @@ import android.widget.Button;
 import android.view.View;
 import android.text.TextWatcher;
 
+import java.util.HashMap;
+import java.util.Iterator;
+
+
 
 public class TypingActivity extends AppCompatActivity {
 
@@ -55,6 +59,16 @@ public class TypingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_typing);
         Log.d(TAG, "Typing Activity created.");
+
+        HashMap<String,String> typoList = new HashMap<>();
+
+        typoList.put("mistyped", "misytped");
+        typoList.put("experiment", "eperimennt");
+        typoList.put("utrecht", "utracht");
+        typoList.put("phone", "phine");
+        typoList.put("hello", "hhhello");
+
+        Iterator it = typoList.entrySet().iterator();
 
         editText = findViewById(R.id.mistyped_word);
         textLength = editText.getText().length();
