@@ -16,7 +16,6 @@
         android:layout_marginTop="152dp"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="misytped"
         android:textAlignment="center"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.503"

@@ -1,0 +1,59 @@
+{
+  "project_info": {
+    "project_number": "371443464029",
+    "firebase_url": "https://senseswipe-b7f1c.firebaseio.com",
+    "project_id": "senseswipe-b7f1c",
+    "storage_bucket": "senseswipe-b7f1c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371443464029:android:6de1545173577cd7",
+        "android_client_info": {
+          "package_name": "nl.norbot.senseswipe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371443464029-av7oj5ivdhvhbi47u1p9beu5gk3ncpqf.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "nl.norbot.senseswipe",
+            "certificate_hash": "196684b2281ee9a00978cd0893d65180db50ef9b"
+          }
+        },
+        {
+          "client_id": "371443464029-08vaippqmemi7ab9sgg90udepe7r24jb.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "371443464029-08vaippqmemi7ab9sgg90udepe7r24jb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCcuZrU0fB3RhAY149wo-IYzCpg0fy688"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371443464029-08vaippqmemi7ab9sgg90udepe7r24jb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

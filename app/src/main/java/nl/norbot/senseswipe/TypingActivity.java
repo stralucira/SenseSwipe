@@ -13,7 +13,9 @@ import android.view.inputmethod.*;
 import android.widget.Button;
 import android.view.View;
 import android.text.TextWatcher;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 
@@ -25,6 +27,15 @@ public class TypingActivity extends AppCompatActivity {
     int textLength;
     int cursorOffsetFromEnd = 0;
     long start, end;
+
+    boolean useFingerPrintSensor;
+
+    HashMap<String,String> typoList;
+    Iterator it;
+    int word_count = 0;
+    HashMap.Entry currentPair;
+
+    long[] measurements = new long[5];
 
     private static final String TAG = TypingActivity.class.getSimpleName();
 
@@ -60,7 +71,7 @@ public class TypingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_typing);
         Log.d(TAG, "Typing Activity created.");
 
-        HashMap<String,String> typoList = new HashMap<>();
+        typoList = new HashMap<>();
 
         typoList.put("mistyped", "misytped");
         typoList.put("experiment", "eperimennt");
@@ -68,7 +79,7 @@ public class TypingActivity extends AppCompatActivity {
         typoList.put("phone", "phine");
         typoList.put("hello", "hhhello");
 
-        Iterator it = typoList.entrySet().iterator();
+        it = typoList.entrySet().iterator();
 
         editText = findViewById(R.id.mistyped_word);
         textLength = editText.getText().length();
@@ -82,11 +93,17 @@ public class TypingActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "Text changed to: " + editText.getText().toString());
-                if (editText.getText().toString().equals("mistyped")){
+                if (editText.getText().toString().equals(currentPair.getKey())){
                     Log.d(TAG, "Success ");
                     end = System.currentTimeMillis();
                     long time = end - start;
                     Log.d(TAG, "Typo fixed in " + time + " msecs.");
+                    measurements[word_count] = time;
+                    currentPair = (HashMap.Entry)it.next();
+                    word_count++;
+                    start = System.currentTimeMillis();
+                    editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
+                    editText.setSelection(editText.getText().length());
                 }
             }
 
@@ -113,6 +130,10 @@ public class TypingActivity extends AppCompatActivity {
             public void onClick(View v) {
                 Log.i("Start Button", "start button clicked");
                 start = System.currentTimeMillis();
+                currentPair = (HashMap.Entry)it.next();
+                word_count++;
+                editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
+                editText.setSelection(editText.getText().length());
                 //finish();
             }
         });

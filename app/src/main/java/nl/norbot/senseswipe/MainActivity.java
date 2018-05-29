@@ -18,7 +18,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 public class MainActivity extends AppCompatActivity {
+
+    FirebaseDatabase database;
+    DatabaseReference myRef;
+
     private static final String TAG = MainActivity.class.getSimpleName();
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -38,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
     Integer subjectNumber;
     Button maze, camera, typing, saveButton;
     SharedPreferences prefs;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +89,12 @@ public class MainActivity extends AppCompatActivity {
             typing.setEnabled(true);
             editText.setText("" + subjectNumber);
         }
+
+        // Example database push code
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("message");
+
+        myRef.setValue("Hello, World!");
     }
 
     protected void onResume() {
