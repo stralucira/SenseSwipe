@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     Integer subjectNumber;
-    Button maze, camera, typing, saveButton;
+    Button maze, camera, typing, ddr, saveButton;
     SharedPreferences prefs;
 
 
@@ -84,12 +84,14 @@ public class MainActivity extends AppCompatActivity {
         maze = findViewById(R.id.button_maze);
         camera = findViewById(R.id.button_camera);
         typing = findViewById(R.id.button_typing);
+        ddr = findViewById(R.id.button_ddr);
 
         subjectNumber = prefs.getInt("subjectnr", -1);
         if(subjectNumber > 0){
             maze.setEnabled(true);
             camera.setEnabled(true);
             typing.setEnabled(true);
+            ddr.setEnabled(true);
             editText.setText("" + subjectNumber);
         }
 
@@ -128,6 +130,11 @@ public class MainActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    public void startDDRActivity(View view) {
+        Intent intent = new Intent(this, DDRActivity.class);
+        startActivity(intent);
+    }
+
     public void saveSubjectNumber(View view) {
         subjectNumber = Integer.parseInt(editText.getText().toString());
         prefs.edit().putInt("subjectnr", subjectNumber).commit();
@@ -138,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
         maze.setEnabled(true);
         camera.setEnabled(true);
         typing.setEnabled(true);
+        ddr.setEnabled(true);
     }
 
 }

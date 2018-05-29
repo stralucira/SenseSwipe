@@ -81,7 +81,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
         android:enabled="false"
-        android:onClick="startTypingActivity"
+        android:onClick="startDDRActivity"
         android:text="@string/main_ddr_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

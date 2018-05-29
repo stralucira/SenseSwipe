@@ -9,4 +9,5 @@
     <string name="title_activity_maze">Maze</string>
     <string name="title_activity_camera">Camera</string>
     <string name="title_activity_typing">Typing</string>
+    <string name="title_activity_ddr">DDR</string>
 </resources>
