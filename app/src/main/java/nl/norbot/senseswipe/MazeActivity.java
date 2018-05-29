@@ -82,6 +82,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
     private AlertDialog.Builder alertbuilder;
 
+    private long Mazestarttime;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,29 +103,13 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
+                startmaze(0);
             }
         });
 
         AlertDialog alert11 = alertbuilder.create();
         alert11.show();
 
-    }
-
-    public void onWindowFocusChanged(boolean hasFocus) {
-        // Gets called when window changes focus
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) {
-            ImageView img = (ImageView) findViewById(R.id.maze_imageviewer);
-
-            int screenwidth = img.getWidth();
-            int screenheight = img.getHeight();
-
-            if (initialized == false) {
-                currentPosition = startpos;
-            }
-            draw(img);
-            initialized = true;
-        }
     }
 
 
@@ -193,9 +178,9 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     private boolean isFinish(Point point){
-        if(point.x == finishpos.x && point.y == finishpos.y){
+        /*if(point.x == finishpos.x && point.y == finishpos.y){
             Log.d("MW","This point is the same");
-        }
+        }*/
         return (point.x == finishpos.x && point.y == finishpos.y);
     }
 
@@ -216,6 +201,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         }
 
         if (isFinish(currentPosition)) {
+            dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
             Log.d("MW", "FInished!");
             currentmaze++;
             startmaze(currentmaze);
@@ -237,12 +223,22 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
+            dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
             Log.d("MW", "FInished!");
             currentmaze++;
             startmaze(currentmaze);
         }
 
     }
+
+    public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
+        long currenttime = System.currentTimeMillis();
+        float timediff = currenttime - Mazestarttime;
+
+        Log.d("MW", "Maze completed in " + timediff);
+        //TODO: Submit results to database
+    }
+
     public void moveup(View view){
         Point newposition = new Point(currentPosition.x, currentPosition.y - 1);
         //Log.d("MW", "moveup");
@@ -259,6 +255,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         }
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
+            dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
             currentmaze++;
             startmaze(currentmaze);
         }
@@ -279,6 +276,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         }
         if (isFinish(currentPosition)) {
+            dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
             Log.d("MW", "FInished!");
             currentmaze++;
             startmaze(currentmaze);
@@ -360,6 +358,9 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     }
 
     public boolean startmaze(int num){
+        Log.d("MW", "Timer started");
+        Mazestarttime = System.currentTimeMillis();
+
         walls = getmaze(num);
         currentPosition = startpos;
 
@@ -406,7 +407,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             for (int i = 1; i < 7; i++) {
                 for (int j = 1; j < 7; j++) {
                     if (j != 3) {
-                        Log.d("MW", "Adding wall: " + i + ", " + j);
+                        //Log.d("MW", "Adding wall: " + i + ", " + j);
 
                         walls.add(new Point(i, j));
                     }

@@ -68,8 +68,11 @@ public class MainActivity extends AppCompatActivity {
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
-        values.put(DBContract.DBEntry.COLUMN_NAME_TASK, "Taak");
-        values.put(DBContract.DBEntry.COLUMN_NAME_VALUE, "Waarde");
+        values.put(DBContract.DBEntry.COLUMN_NAME_SUBJECT, "SubTask");
+        values.put(DBContract.DBEntry.COLUMN_NAME_INPUTMETHOD, "InputMethod");
+        values.put(DBContract.DBEntry.COLUMN_NAME_TASK, "Task");
+        values.put(DBContract.DBEntry.COLUMN_NAME_SUBTASK, "SubTask");
+        values.put(DBContract.DBEntry.COLUMN_NAME_VALUE, "Value");
 
         // Insert the new row, returning the primary key value of the new row
         long newRowId = db.insert(DBContract.DBEntry.TABLE_NAME, null, values);
