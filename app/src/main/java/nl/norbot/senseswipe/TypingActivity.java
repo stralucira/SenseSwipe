@@ -118,6 +118,7 @@ public class TypingActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "Text changed to: " + editText.getText().toString());
+                textLength = editText.getText().length();
                 if (editText.getText().toString().equals(currentPair.getKey())){
                     Log.d(TAG, "Success ");
                     end = System.currentTimeMillis();
@@ -213,6 +214,7 @@ public class TypingActivity extends AppCompatActivity {
         word_count++;
         start = System.currentTimeMillis();
         editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
+        textLength = editText.getText().length();
         editText.setSelection(editText.getText().length());
         correctWordText.setText((CharSequence) currentPair.getKey());
     }
