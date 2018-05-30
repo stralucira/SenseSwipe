@@ -46,6 +46,7 @@ public class TypingActivity extends AppCompatActivity {
 
     private FirebaseDatabase database;
     private DatabaseReference databasereference;
+    DatabaseReference wordIndex;
 
     private static final String TAG = TypingActivity.class.getSimpleName();
 
@@ -196,10 +197,13 @@ public class TypingActivity extends AppCompatActivity {
             inputmethod = "screen";
         }
 
-        Long longWrap = new Long(measurements[word_count]);
+        for(int i = 0 ; i < 5 ; i++) {
+            Long longWrap = new Long(measurements[i]);
 
-        DatabaseReference wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(word_count));
-        wordIndex.child("completionTime").setValue(longWrap.toString(measurements[word_count]));
+            wordIndex = databasereference.child("237").child(inputmethod).child("Typing").child(Integer.toString(i));
+
+            wordIndex.child("completionTime").setValue(longWrap.toString(measurements[i]));
+        }
     }
 
     protected void presentNextWord() {
