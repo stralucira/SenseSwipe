@@ -62,6 +62,9 @@ public class TypingActivity extends AppCompatActivity {
 
                 if(direction == 2){
                     cursorOffsetFromEnd++;
+                    if(cursorOffsetFromEnd >= textLength){
+                        cursorOffsetFromEnd = textLength;
+                    }
                     moveCursor();
                 }
                 if(direction == 1){
@@ -118,6 +121,7 @@ public class TypingActivity extends AppCompatActivity {
             @Override
             public void afterTextChanged(Editable s) {
                 Log.d(TAG, "Text changed to: " + editText.getText().toString());
+
                 textLength = editText.getText().length();
                 if (editText.getText().toString().equals(currentPair.getKey())){
                     Log.d(TAG, "Success ");
@@ -187,6 +191,8 @@ public class TypingActivity extends AppCompatActivity {
     }
 
     public void moveCursor(){
+        Log.d("MW", "Cursoroffset: " + cursorOffsetFromEnd);
+        Log.d("MW", "Cursorposition: " + (textLength - cursorOffsetFromEnd));
         editText.setSelection(textLength - cursorOffsetFromEnd);
     }
 
@@ -216,6 +222,8 @@ public class TypingActivity extends AppCompatActivity {
         editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
         textLength = editText.getText().length();
         editText.setSelection(editText.getText().length());
+        textLength = editText.getText().length();
+
         correctWordText.setText((CharSequence) currentPair.getKey());
     }
 }
