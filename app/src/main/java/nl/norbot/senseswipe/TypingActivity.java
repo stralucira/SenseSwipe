@@ -15,6 +15,9 @@ import android.view.View;
 import android.text.TextWatcher;
 import android.widget.TextView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -28,14 +31,21 @@ public class TypingActivity extends AppCompatActivity {
     int cursorOffsetFromEnd = 0;
     long start, end;
 
-    boolean useFingerPrintSensor;
+    TextView infoText;
+
+    boolean useFingerPrintGestures;
 
     HashMap<String,String> typoList;
     Iterator it;
     int word_count = 0;
     HashMap.Entry currentPair;
 
-    long[] measurements = new long[5];
+    long[] measurements = new long[15];
+
+    private int id;
+
+    private FirebaseDatabase database;
+    private DatabaseReference databasereference;
 
     private static final String TAG = TypingActivity.class.getSimpleName();
 
@@ -71,6 +81,12 @@ public class TypingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_typing);
         Log.d(TAG, "Typing Activity created.");
 
+        id = getIntent().getIntExtra("id", 0);
+        useFingerPrintGestures = getIntent().getBooleanExtra("useFingerprint", false);
+
+        database = FirebaseDatabase.getInstance();
+        databasereference = database.getReference();
+
         typoList = new HashMap<>();
 
         typoList.put("mistyped", "misytped");
@@ -84,6 +100,13 @@ public class TypingActivity extends AppCompatActivity {
         editText = findViewById(R.id.mistyped_word);
         textLength = editText.getText().length();
         editText.setSelection(textLength, textLength);
+        infoText = findViewById(R.id.usage);
+
+        if (useFingerPrintGestures) {
+            infoText.setText("using fingerprint gestures!");
+        } else {
+            infoText.setText("using the screen!");
+        }
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
@@ -99,11 +122,21 @@ public class TypingActivity extends AppCompatActivity {
                     long time = end - start;
                     Log.d(TAG, "Typo fixed in " + time + " msecs.");
                     measurements[word_count] = time;
-                    currentPair = (HashMap.Entry)it.next();
-                    word_count++;
-                    start = System.currentTimeMillis();
-                    editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
-                    editText.setSelection(editText.getText().length());
+
+                    if(word_count < 5) {
+                        presentNextWord();
+                    } else {
+                        dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
+                        word_count = 0;
+                        it = typoList.entrySet().iterator();
+                        useFingerPrintGestures = !useFingerPrintGestures;
+                        if (useFingerPrintGestures) {
+                            infoText.setText("using fingerprint gestures!");
+                        } else {
+                            infoText.setText("using the screen!");
+                        }
+                        editText.setText(" ");
+                    }
                 }
             }
 
@@ -119,21 +152,17 @@ public class TypingActivity extends AppCompatActivity {
             }
         });
 
-        setUpButton();
+        startButton();
     }
 
-    private void setUpButton(){
+    private void startButton(){
         Button startButton = findViewById(R.id.button);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("Start Button", "start button clicked");
-                start = System.currentTimeMillis();
-                currentPair = (HashMap.Entry)it.next();
-                word_count++;
-                editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
-                editText.setSelection(editText.getText().length());
+                presentNextWord();
                 //finish();
             }
         });
@@ -155,5 +184,29 @@ public class TypingActivity extends AppCompatActivity {
 
     public void moveCursor(){
         editText.setSelection(textLength - cursorOffsetFromEnd);
+    }
+
+    public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
+
+        String inputmethod;
+        if(useFingerPrintGestures){
+            inputmethod = "fingerprint";
+        }
+        else{
+            inputmethod = "screen";
+        }
+
+        Long longWrap = new Long(measurements[word_count]);
+
+        DatabaseReference wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(word_count));
+        wordIndex.child("completionTime").setValue(longWrap.toString(measurements[word_count]));
+    }
+
+    protected void presentNextWord() {
+        currentPair = (HashMap.Entry) it.next();
+        word_count++;
+        start = System.currentTimeMillis();
+        editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
+        editText.setSelection(editText.getText().length());
     }
 }
