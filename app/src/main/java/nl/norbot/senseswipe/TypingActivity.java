@@ -31,7 +31,7 @@ public class TypingActivity extends AppCompatActivity {
     int cursorOffsetFromEnd = 0;
     long start, end;
 
-    TextView infoText;
+    TextView infoText, correctWordText;
 
     boolean useFingerPrintGestures;
 
@@ -102,6 +102,7 @@ public class TypingActivity extends AppCompatActivity {
         textLength = editText.getText().length();
         editText.setSelection(textLength, textLength);
         infoText = findViewById(R.id.usage);
+        correctWordText = findViewById(R.id.correctWord);
 
         if (useFingerPrintGestures) {
             infoText.setText("using fingerprint gestures!");
@@ -137,6 +138,7 @@ public class TypingActivity extends AppCompatActivity {
                             infoText.setText("using the screen!");
                         }
                         editText.setText(" ");
+                        correctWordText.setText(" ");
                     }
                 }
             }
@@ -200,7 +202,7 @@ public class TypingActivity extends AppCompatActivity {
         for(int i = 0 ; i < 5 ; i++) {
             Long longWrap = new Long(measurements[i]);
 
-            wordIndex = databasereference.child("237").child(inputmethod).child("Typing").child(Integer.toString(i));
+            wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("Typing").child(Integer.toString(i));
 
             wordIndex.child("completionTime").setValue(longWrap.toString(measurements[i]));
         }
@@ -212,5 +214,6 @@ public class TypingActivity extends AppCompatActivity {
         start = System.currentTimeMillis();
         editText.setText((CharSequence) currentPair.getValue(), TextView.BufferType.EDITABLE);
         editText.setSelection(editText.getText().length());
+        correctWordText.setText((CharSequence) currentPair.getKey());
     }
 }

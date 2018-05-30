@@ -136,6 +136,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTypingActivity(View view) {
         Intent intent = new Intent(this, TypingActivity.class);
+        intent.putExtra("id", subjectNumber);
+        intent.putExtra("useFingerprint", false);
         startActivity(intent);
     }
 
