@@ -69,19 +69,19 @@ public class MainActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.button_save_subject_number);
         mazescreen = findViewById(R.id.button_maze_screen);
         mazefingerprint = findViewById(R.id.button_maze_fingerprint);
-        camera = findViewById(R.id.button_camera);
-        typing = findViewById(R.id.button_typing);
-        ddr = findViewById(R.id.button_ddr);
+        //camera = findViewById(R.id.button_camera);
+        //typing = findViewById(R.id.button_typing);
+        //ddr = findViewById(R.id.button_ddr);
 
-        nrHint = findViewById(R.id.nrhint);
+        //nrHint = findViewById(R.id.nrhint);
 
         subjectNumber = prefs.getInt("subjectnr", -1);
         if(subjectNumber > 0){
             mazescreen.setEnabled(true);
             mazefingerprint.setEnabled(true);
-            camera.setEnabled(true);
-            typing.setEnabled(true);
-            ddr.setEnabled(true);
+            //camera.setEnabled(true);
+            //typing.setEnabled(true);
+            //ddr.setEnabled(true);
         }
 
         // Example database push code
@@ -172,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
                         //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         mazescreen.setEnabled(true);
                         mazefingerprint.setEnabled(true);
-                        camera.setEnabled(true);
-                        typing.setEnabled(true);
-                        ddr.setEnabled(true);
+                        //camera.setEnabled(true);
+                        //typing.setEnabled(true);
+                        //ddr.setEnabled(true);
                     }
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
