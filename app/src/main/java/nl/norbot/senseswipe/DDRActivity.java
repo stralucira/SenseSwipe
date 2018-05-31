@@ -17,6 +17,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,14 +27,22 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private final String TAG = getClass().getSimpleName();
 
     private AlertDialog.Builder alertbuilder;
-    private boolean usefingerprintgestures = false;
+    private boolean useFingerPrintGestures = false;
     private boolean inputEnabled = false;
     private GestureDetectorCompat mDetector;
+    
+    private int id;
+    long start, end;
+
+
+    private FirebaseDatabase database;
+    private DatabaseReference databasereference;
+    DatabaseReference wordIndex;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (inputEnabled && usefingerprintgestures) {
+            if (inputEnabled && useFingerPrintGestures) {
                 try {
                     int swipe = intent.getIntExtra("gesture_id", 0);
 
@@ -87,6 +98,12 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ddr);
+
+        id = getIntent().getIntExtra("id", 0);
+        useFingerPrintGestures = getIntent().getBooleanExtra("useFingerprint", false);
+
+        database = FirebaseDatabase.getInstance();
+        databasereference = database.getReference();
         mDetector = new GestureDetectorCompat(this,this);
 
         arrowUp = findViewById(R.id.arrow_up);
@@ -99,7 +116,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
         alertbuilder = new AlertDialog.Builder(this);
 
-        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible.");
+        if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible.");
         else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -198,7 +215,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                 dialog.cancel();
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 intent.putExtra("id", id);
-                intent.putExtra("useFingerprint", usefingerprintgestures);
+                intent.putExtra("useFingerprint", useFingerPrintGestures);
                 startActivity(intent);
             }
         });
@@ -210,7 +227,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         Log.d("MW", "Fling gesture received");
-        if (!usefingerprintgestures && inputEnabled) {
+        if (!useFingerPrintGestures && inputEnabled) {
             if (Math.abs(velocityX) > Math.abs(velocityY)) {
                 //Move along X-axis
                 if (velocityX > 0) {
@@ -272,6 +289,14 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             return true;
         }
         return super.onTouchEvent(event);
+    }
+
+    private void startTimer() {
+
+    }
+
+    private void recordTime() {
+
     }
 }
 
