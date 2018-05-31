@@ -3,9 +3,11 @@
     <string name="main_maze_button">Maze</string>
     <string name="main_camera_button">Camera</string>
     <string name="main_typing_button">Typing</string>
+    <string name="main_ddr_button">DDR</string>
     <string name="main_subject_number_hint">Subject Nr</string>
     <string name="main_save_subject_number_button">Save Subject Number</string>
     <string name="title_activity_maze">Maze</string>
     <string name="title_activity_camera">Camera</string>
     <string name="title_activity_typing">Typing</string>
+    <string name="title_activity_ddr">DDR</string>
 </resources>

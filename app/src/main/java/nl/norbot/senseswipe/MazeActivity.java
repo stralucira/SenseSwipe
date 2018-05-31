@@ -5,15 +5,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -81,7 +84,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     int vibrationlength = 200;
 
     private GestureDetectorCompat mDetector;
-    private int currentmaze = 0;
+    private int currentmaze = -1;
 
     private AlertDialog.Builder alertbuilder;
 
@@ -91,6 +94,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
     private int numberOfErrors = 0;
     private int id;
+
+    private Drawable finishimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,19 +117,22 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
         alertbuilder = new AlertDialog.Builder(this);
 
-        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor to move the dot to the finish.");
-        else alertbuilder.setMessage("Swipe the screen to move the dot to the finish.");
+        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
+        else alertbuilder.setMessage("Swipe the screen to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
-                startmaze(0);
+                startmaze(-1);
             }
         });
 
         AlertDialog alert11 = alertbuilder.create();
         alert11.show();
 
+        Resources resourcse;
+        int resourceid = getResources().getIdentifier("@android:drawable/star_big_on", "drawable", this.getPackageName());
 
+        finishimage = getResources().getDrawable(resourceid);
 
         database = FirebaseDatabase.getInstance();
         databasereference = database.getReference();
@@ -170,9 +178,21 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         paint.setColor(Color.rgb(0,0,0));
 
         //Draw the finish
+        int finishimagesize = 120;
         paint.setColor(Color.rgb(0,255,0));
         Point finishpixelpos = convertToPixelCoordinates(finishpos, screenWidth, screenHeight);
-        canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
+
+        Rect imageBounds = new Rect(finishpixelpos.x - (finishimagesize / 2), finishpixelpos.y - (finishimagesize / 2), finishpixelpos.x + (finishimagesize / 2), finishpixelpos.y + (finishimagesize / 2));
+        //imageBounds = new Rect(0, 0, 50, 50);
+        Rect imageBoundscanvas = canvas.getClipBounds();
+
+        Log.d("MW", "imagebounds: " + imageBounds);
+        Log.d("MW", "imagesboundscanvas: " + imageBoundscanvas);
+
+
+        finishimage.setBounds(imageBounds);
+        finishimage.draw(canvas);
+        //canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
         paint.setColor(Color.rgb(0,0,0));
 
         view.invalidate();
@@ -421,7 +441,33 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             }
         }
 
-        if (num == 0) {
+        if(num == -1){
+            //Practice maze
+            walls.add(new Point(4, 1));
+            walls.add(new Point(5, 1));
+            walls.add(new Point(6, 1));
+
+            walls.add(new Point(1, 2));
+            walls.add(new Point(2, 2));
+
+            walls.add(new Point(2, 3));
+            walls.add(new Point(3, 3));
+            walls.add(new Point(4, 3));
+            walls.add(new Point(5, 3));
+
+            walls.add(new Point(2, 4));
+
+            walls.add(new Point(2, 5));
+            walls.add(new Point(4, 5));
+            walls.add(new Point(5, 5));
+            walls.add(new Point(6, 5));
+
+            startpos = new Point(1, 1);
+            finishpos = new Point(1, 3);
+
+        }
+
+        else if (num == 0) {
             //Maze vertical line. move down
             //Tests difference between up/down/left/right (1/4)
 

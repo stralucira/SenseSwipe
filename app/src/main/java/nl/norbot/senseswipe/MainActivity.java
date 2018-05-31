@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     Integer subjectNumber;
-    Button mazescreen, mazefingerprint, camera, typing, saveButton;
+    Button mazescreen, mazefingerprint, camera, typing, ddr saveButton;
     SharedPreferences prefs;
     TextView nrHint;
 
@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
         mazefingerprint = findViewById(R.id.button_maze_fingerprint);
         camera = findViewById(R.id.button_camera);
         typing = findViewById(R.id.button_typing);
+        ddr = findViewById(R.id.button_ddr);
 
         nrHint = findViewById(R.id.nrhint);
 
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
             mazefingerprint.setEnabled(true);
             camera.setEnabled(true);
             typing.setEnabled(true);
+            ddr.setEnabled(true);
             editText.setText("" + subjectNumber);
         }
 
@@ -120,6 +122,13 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTypingActivity(View view) {
         Intent intent = new Intent(this, TypingActivity.class);
+        intent.putExtra("id", subjectNumber);
+        intent.putExtra("useFingerprint", false);
+        startActivity(intent);
+    }
+
+    public void startDDRActivity(View view) {
+        Intent intent = new Intent(this, DDRActivity.class);
         startActivity(intent);
     }
 
@@ -134,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
         mazefingerprint.setEnabled(true);
         camera.setEnabled(true);
         typing.setEnabled(true);
+        ddr.setEnabled(true);
     }
 
 }
