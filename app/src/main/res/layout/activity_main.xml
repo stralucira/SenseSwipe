@@ -89,30 +89,28 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/edittext_subject_number" />
 
-<<<<<<< HEAD
-    <TextView
-        android:id="@+id/nrhint"
-=======
     <Button
         android:id="@+id/button_ddr"
->>>>>>> edd3716549e99e0d723d081027a99c1f28e4c0c1
         android:layout_width="368dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:layout_marginStart="16dp"
-<<<<<<< HEAD
-        android:text=""
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_save_subject_number" />
-
-=======
         android:enabled="false"
         android:onClick="startDDRActivity"
         android:text="@string/main_ddr_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_typing" />
->>>>>>> edd3716549e99e0d723d081027a99c1f28e4c0c1
+
+    <TextView
+        android:id="@+id/nrhint"
+        android:layout_width="368dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:text=""
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_save_subject_number" />
 
 </android.support.constraint.ConstraintLayout>
