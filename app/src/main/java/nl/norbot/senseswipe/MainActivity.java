@@ -17,6 +17,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     Integer subjectNumber;
     Button mazescreen, mazefingerprint, camera, typing, saveButton;
     SharedPreferences prefs;
+    TextView nrHint;
 
 
 
@@ -59,32 +61,14 @@ public class MainActivity extends AppCompatActivity {
       
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        /*
-
-        DatabaseHelper mDbHelper = new DatabaseHelper(getApplicationContext());
-
-        // Gets the data repository in write mode
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
-
-        // Create a new map of values, where column names are the keys
-        ContentValues values = new ContentValues();
-        values.put(DBContract.DBEntry.COLUMN_NAME_SUBJECT, "SubTask");
-        values.put(DBContract.DBEntry.COLUMN_NAME_INPUTMETHOD, "InputMethod");
-        values.put(DBContract.DBEntry.COLUMN_NAME_TASK, "Task");
-        values.put(DBContract.DBEntry.COLUMN_NAME_SUBTASK, "SubTask");
-        values.put(DBContract.DBEntry.COLUMN_NAME_VALUE, "Value");
-
-        // Insert the new row, returning the primary key value of the new row
-        long newRowId = db.insert(DBContract.DBEntry.TABLE_NAME, null, values);
-
-        */
-
         editText = findViewById(R.id.edittext_subject_number);
         saveButton = findViewById(R.id.button_save_subject_number);
         mazescreen = findViewById(R.id.button_maze_screen);
         mazefingerprint = findViewById(R.id.button_maze_fingerprint);
         camera = findViewById(R.id.button_camera);
         typing = findViewById(R.id.button_typing);
+
+        nrHint = findViewById(R.id.nrhint);
 
         subjectNumber = prefs.getInt("subjectnr", -1);
         if(subjectNumber > 0){
@@ -142,8 +126,8 @@ public class MainActivity extends AppCompatActivity {
     public void saveSubjectNumber(View view) {
         subjectNumber = Integer.parseInt(editText.getText().toString());
         prefs.edit().putInt("subjectnr", subjectNumber).commit();
-        editText.setInputType(InputType.TYPE_NULL);
-        editText.setText("Subject number set to " + subjectNumber);
+        //editText.setInputType(InputType.TYPE_NULL);
+        nrHint.setText("Subject number set to " + editText.getText().toString());
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         mazescreen.setEnabled(true);
