@@ -2,8 +2,10 @@ package nl.norbot.senseswipe;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -31,7 +33,7 @@ public class TypingActivity extends AppCompatActivity {
     int cursorOffsetFromEnd = 0;
     long start, end;
 
-    TextView infoText, correctWordText;
+    TextView infoText, correctWordText, correct, usageText;
 
     boolean useFingerPrintGestures;
 
@@ -47,6 +49,9 @@ public class TypingActivity extends AppCompatActivity {
     private FirebaseDatabase database;
     private DatabaseReference databasereference;
     DatabaseReference wordIndex;
+
+    private AlertDialog.Builder alertbuilder;
+    AlertDialog endAlert, practiceAlert;
 
     private static final String TAG = TypingActivity.class.getSimpleName();
 
@@ -91,6 +96,27 @@ public class TypingActivity extends AppCompatActivity {
         database = FirebaseDatabase.getInstance();
         databasereference = database.getReference();
 
+        alertbuilder = new AlertDialog.Builder(this);
+        alertbuilder.setMessage("You have finished the typing activity. Press Next to move on to the next activity.");
+        alertbuilder.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                intent.putExtra("id", id);
+                intent.putExtra("useFingerprint", useFingerPrintGestures);
+                startActivity(intent);
+            }
+        });
+        endAlert = alertbuilder.create();
+
+        if(useFingerPrintGestures) {
+            alertbuilder.setMessage("Please practice moving the cursor over the presented word using the fingerprint scanner!");
+        } else {
+            alertbuilder.setMessage("Please practice moving the cursor over the presented word using the screen!");
+        }
+
+
+
         typoList = new HashMap<>();
 
         typoList.put("mistyped", "misytped");
@@ -105,72 +131,88 @@ public class TypingActivity extends AppCompatActivity {
         textLength = editText.getText().length();
         editText.setSelection(textLength, textLength);
         infoText = findViewById(R.id.usage);
+        usageText = findViewById(R.id.info);
         correctWordText = findViewById(R.id.correctWord);
+        correct = findViewById(R.id.correct);
+        correct.setVisibility(View.INVISIBLE);
+        infoText.setVisibility(View.VISIBLE);
+        usageText.setVisibility(View.VISIBLE);
 
-        if (useFingerPrintGestures) {
-            infoText.setText("using fingerprint gestures!");
-        } else {
-            infoText.setText("using the screen!");
-        }
+        alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                usageText.setText("If you are done practicing, press Start and");
+                if (useFingerPrintGestures) {
+                    infoText.setText("start fixing the typos using the SENSOR!");
+                } else {
+                    infoText.setText("start fixing the typos using the SCREEN!");
+                }
+            }
+        });
+        practiceAlert = alertbuilder.create();
+        practiceAlert.show();
 
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
-        editText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                Log.d(TAG, "Text changed to: " + editText.getText().toString());
-
-                textLength = editText.getText().length();
-                if (editText.getText().toString().equals(currentPair.getKey())){
-                    Log.d(TAG, "Success ");
-                    end = System.currentTimeMillis();
-                    long time = end - start;
-                    Log.d(TAG, "Typo fixed in " + time + " msecs.");
-                    measurements[word_count] = time;
-
-                    if(word_count < 5) {
-                        presentNextWord();
-                    } else {
-                        dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
-                        word_count = 0;
-                        it = typoList.entrySet().iterator();
-                        useFingerPrintGestures = !useFingerPrintGestures;
-                        if (useFingerPrintGestures) {
-                            infoText.setText("using fingerprint gestures!");
-                        } else {
-                            infoText.setText("using the screen!");
-                        }
-                        editText.setText(" ");
-                        correctWordText.setText(" ");
-                    }
-                }
-            }
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start,
-                                          int count, int after) {
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start,
-                                      int before, int count) {
-
-            }
-        });
+        // logic used to be here
 
         startButton();
     }
 
     private void startButton(){
-        Button startButton = findViewById(R.id.button);
+        final Button startButton = findViewById(R.id.button);
 
         startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("Start Button", "start button clicked");
                 presentNextWord();
+                infoText.setVisibility(View.INVISIBLE);
+                usageText.setVisibility(View.INVISIBLE);
+                startButton.setVisibility(View.INVISIBLE);
+
+                if (useFingerPrintGestures) {
+                    infoText.setText("Use the SENSOR to fix the typo!");
+                } else {
+                    infoText.setText("Use the SCREEN to fix the typo!");
+                }
+
+                editText.addTextChangedListener(new TextWatcher() {
+
+                    @Override
+                    public void afterTextChanged(Editable s) {
+                        Log.d(TAG, "Text changed to: " + editText.getText().toString());
+
+                        textLength = editText.getText().length();
+                        if (editText.getText().toString().equals(currentPair.getKey())){
+                            Log.d(TAG, "Success ");
+                            end = System.currentTimeMillis();
+                            long time = end - start;
+                            Log.d(TAG, "Typo fixed in " + time + " msecs.");
+                            measurements[word_count-1] = time;
+
+                            if(word_count < 5) {
+                                presentNextWord();
+                            } else {
+                                dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
+                                endAlert.show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void beforeTextChanged(CharSequence s, int start,
+                                                  int count, int after) {
+                    }
+
+                    @Override
+                    public void onTextChanged(CharSequence s, int start,
+                                              int before, int count) {
+
+                    }
+                });
+
                 //finish();
             }
         });
@@ -225,5 +267,6 @@ public class TypingActivity extends AppCompatActivity {
         textLength = editText.getText().length();
 
         correctWordText.setText((CharSequence) currentPair.getKey());
+        correct.setVisibility(View.VISIBLE);
     }
 }
