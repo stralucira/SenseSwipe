@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     Integer subjectNumber;
-    Button mazescreen, mazefingerprint, camera, typing, ddr saveButton;
+    Button mazescreen, mazefingerprint, camera, typing, ddr, saveButton;
     SharedPreferences prefs;
     TextView nrHint;
 
