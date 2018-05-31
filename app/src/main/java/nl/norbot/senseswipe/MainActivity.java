@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
 
     EditText editText;
     Integer subjectNumber;
-    Button maze, camera, typing, ddr, saveButton;
+    Button mazescreen, mazefingerprint, camera, typing, ddr saveButton;
     SharedPreferences prefs;
 
 
@@ -81,14 +81,16 @@ public class MainActivity extends AppCompatActivity {
 
         editText = findViewById(R.id.edittext_subject_number);
         saveButton = findViewById(R.id.button_save_subject_number);
-        maze = findViewById(R.id.button_maze);
+        mazescreen = findViewById(R.id.button_maze_screen);
+        mazefingerprint = findViewById(R.id.button_maze_fingerprint);
         camera = findViewById(R.id.button_camera);
         typing = findViewById(R.id.button_typing);
         ddr = findViewById(R.id.button_ddr);
 
         subjectNumber = prefs.getInt("subjectnr", -1);
         if(subjectNumber > 0){
-            maze.setEnabled(true);
+            mazescreen.setEnabled(true);
+            mazefingerprint.setEnabled(true);
             camera.setEnabled(true);
             typing.setEnabled(true);
             ddr.setEnabled(true);
@@ -115,8 +117,17 @@ public class MainActivity extends AppCompatActivity {
         unregisterReceiver(receiver);
     }
 
-    public void startMazeActivity(View view) {
+    public void startMazeActivityScreen(View view) {
         Intent intent = new Intent(this, MazeActivity.class);
+        intent.putExtra("id", subjectNumber);
+        intent.putExtra("useFingerprint", false);
+        startActivity(intent);
+    }
+
+    public void startMazeActivityFingerprint(View view) {
+        Intent intent = new Intent(this, MazeActivity.class);
+        intent.putExtra("id", subjectNumber);
+        intent.putExtra("useFingerprint", true);
         startActivity(intent);
     }
 
@@ -127,6 +138,8 @@ public class MainActivity extends AppCompatActivity {
 
     public void startTypingActivity(View view) {
         Intent intent = new Intent(this, TypingActivity.class);
+        intent.putExtra("id", subjectNumber);
+        intent.putExtra("useFingerprint", false);
         startActivity(intent);
     }
 
@@ -142,7 +155,8 @@ public class MainActivity extends AppCompatActivity {
         editText.setText("Subject number set to " + subjectNumber);
         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        maze.setEnabled(true);
+        mazescreen.setEnabled(true);
+        mazefingerprint.setEnabled(true);
         camera.setEnabled(true);
         typing.setEnabled(true);
         ddr.setEnabled(true);

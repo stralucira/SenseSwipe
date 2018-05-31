@@ -5,15 +5,18 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.support.v4.content.res.ResourcesCompat;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,6 +28,9 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.ArrayList;
 
@@ -78,17 +84,28 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     int vibrationlength = 200;
 
     private GestureDetectorCompat mDetector;
-    private int currentmaze = 0;
+    private int currentmaze = -1;
 
     private AlertDialog.Builder alertbuilder;
 
     private long Mazestarttime;
+    private FirebaseDatabase database;
+    private DatabaseReference databasereference;
+
+    private int numberOfErrors = 0;
+    private int id;
+
+    private Drawable finishimage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maze);
         Log.d(TAG, "Maze Activity created.");
+
+        id = getIntent().getIntExtra("id", 0);
+        usefingerprintgestures = getIntent().getBooleanExtra("useFingerprint", false);
+        usescreengestures = !usefingerprintgestures;
 
         ImageView screen = findViewById(R.id.maze_imageviewer);
         Log.d("Screenwidth", String.valueOf(screen.getWidth()));
@@ -99,17 +116,26 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         mDetector = new GestureDetectorCompat(this,this);
 
         alertbuilder = new AlertDialog.Builder(this);
-        alertbuilder.setMessage("Swipe the screen to move the dot to the finish.");
+
+        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
+        else alertbuilder.setMessage("Swipe the screen to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
-                startmaze(0);
+                startmaze(-1);
             }
         });
 
         AlertDialog alert11 = alertbuilder.create();
         alert11.show();
 
+        Resources resourcse;
+        int resourceid = getResources().getIdentifier("@android:drawable/star_big_on", "drawable", this.getPackageName());
+
+        finishimage = getResources().getDrawable(resourceid);
+
+        database = FirebaseDatabase.getInstance();
+        databasereference = database.getReference();
     }
 
 
@@ -152,9 +178,21 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         paint.setColor(Color.rgb(0,0,0));
 
         //Draw the finish
+        int finishimagesize = 120;
         paint.setColor(Color.rgb(0,255,0));
         Point finishpixelpos = convertToPixelCoordinates(finishpos, screenWidth, screenHeight);
-        canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
+
+        Rect imageBounds = new Rect(finishpixelpos.x - (finishimagesize / 2), finishpixelpos.y - (finishimagesize / 2), finishpixelpos.x + (finishimagesize / 2), finishpixelpos.y + (finishimagesize / 2));
+        //imageBounds = new Rect(0, 0, 50, 50);
+        Rect imageBoundscanvas = canvas.getClipBounds();
+
+        Log.d("MW", "imagebounds: " + imageBounds);
+        Log.d("MW", "imagesboundscanvas: " + imageBoundscanvas);
+
+
+        finishimage.setBounds(imageBounds);
+        finishimage.draw(canvas);
+        //canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
         paint.setColor(Color.rgb(0,0,0));
 
         view.invalidate();
@@ -198,6 +236,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
 
         if (isFinish(currentPosition)) {
@@ -221,6 +261,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
         }
         if (isFinish(currentPosition)) {
             dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
@@ -236,7 +277,19 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         float timediff = currenttime - Mazestarttime;
 
         Log.d("MW", "Maze completed in " + timediff);
-        //TODO: Submit results to database
+
+        String inputmethod;
+        if(usefingerprintgestures){
+            inputmethod = "fingerprint";
+        }
+        else{
+            inputmethod = "screen";
+        }
+
+        DatabaseReference mazeposition = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(currentmaze));
+        mazeposition.child("completionTime").setValue(Float.toString(timediff));
+        mazeposition.child("errorRate").setValue(Integer.toString(numberOfErrors));
+        //TODO: use id from intent
     }
 
     public void moveup(View view){
@@ -252,6 +305,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
         if (isFinish(currentPosition)) {
             Log.d("MW", "FInished!");
@@ -274,6 +329,8 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         else{
             //Player hit a wall, vibrate.
             v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+            numberOfErrors++;
+
         }
         if (isFinish(currentPosition)) {
             dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
@@ -315,7 +372,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
         Log.d("MW", "tap up gesture received");
-        startmaze(0);
+        //startmaze(0);
         return false;
     }
 
@@ -360,6 +417,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
     public boolean startmaze(int num){
         Log.d("MW", "Timer started");
         Mazestarttime = System.currentTimeMillis();
+        numberOfErrors = 0;
 
         walls = getmaze(num);
         currentPosition = startpos;
@@ -383,7 +441,33 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             }
         }
 
-        if (num == 0) {
+        if(num == -1){
+            //Practice maze
+            walls.add(new Point(4, 1));
+            walls.add(new Point(5, 1));
+            walls.add(new Point(6, 1));
+
+            walls.add(new Point(1, 2));
+            walls.add(new Point(2, 2));
+
+            walls.add(new Point(2, 3));
+            walls.add(new Point(3, 3));
+            walls.add(new Point(4, 3));
+            walls.add(new Point(5, 3));
+
+            walls.add(new Point(2, 4));
+
+            walls.add(new Point(2, 5));
+            walls.add(new Point(4, 5));
+            walls.add(new Point(5, 5));
+            walls.add(new Point(6, 5));
+
+            startpos = new Point(1, 1);
+            finishpos = new Point(1, 3);
+
+        }
+
+        else if (num == 0) {
             //Maze vertical line. move down
             //Tests difference between up/down/left/right (1/4)
 
@@ -514,7 +598,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             startpos = new Point(6,6);
         }
         else{
-            currentmaze = 0;
+            /*currentmaze = 0;
             usefingerprintgestures = true;
             usescreengestures = false;
             walls = getmaze(0);
@@ -528,11 +612,22 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
             AlertDialog alert11 = alertbuilder.create();
             alert11.show();
+            */
+            alertbuilder.setMessage("Finished all mazes");
+            alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    Intent intent = new Intent(getBaseContext(), TypingActivity.class);
+                    intent.putExtra("id", id);
+                    intent.putExtra("useFingerprint", usefingerprintgestures);
+                    startActivity(intent);
+                }
+            });
+
+            AlertDialog alert11 = alertbuilder.create();
+            alert11.show();
 
 
-
-            //TODO: add more mazes
-            //TODO: what happens when all mazes have been completed?
         }
         return walls;
     }
