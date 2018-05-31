@@ -7,27 +7,31 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DDRActivity extends AppCompatActivity {
+public class DDRActivity extends AppCompatActivity implements GestureDetector.OnGestureListener {
     private final String TAG = getClass().getSimpleName();
 
     private AlertDialog.Builder alertbuilder;
     private boolean usefingerprintgestures = false;
     private boolean inputEnabled = false;
+    private GestureDetectorCompat mDetector;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (inputEnabled) {
+            if (inputEnabled && usefingerprintgestures) {
                 try {
                     int swipe = intent.getIntExtra("gesture_id", 0);
 
@@ -83,6 +87,8 @@ public class DDRActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ddr);
+        mDetector = new GestureDetectorCompat(this,this);
+
         arrowUp = findViewById(R.id.arrow_up);
         arrowDown = findViewById(R.id.arrow_down);
         arrowLeft = findViewById(R.id.arrow_left);
@@ -90,19 +96,6 @@ public class DDRActivity extends AppCompatActivity {
         hideArrows();
 
         sequence = getSequence();
-
-        /*Handler handler = new Handler(Looper.getMainLooper());
-        for (int i = 0; i < sequence.size(); i++)
-        {
-            arrowIndex = i;
-            handler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    //Log.d(TAG, "WOOOO");
-                    showArrow(sequence.get(arrowIndex).direction);
-                }
-            }, (long)sequence.get(i).startDelay);
-        }*/
 
         alertbuilder = new AlertDialog.Builder(this);
 
@@ -212,6 +205,73 @@ public class DDRActivity extends AppCompatActivity {
 
         AlertDialog ddrAlert = alertbuilder.create();
         ddrAlert.show();
+    }
+
+    @Override
+    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+        Log.d("MW", "Fling gesture received");
+        if (!usefingerprintgestures && inputEnabled) {
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                //Move along X-axis
+                if (velocityX > 0) {
+                    if (currentArrow.equals("RIGHT")) {
+                        Log.d(TAG, "Direction correct: RIGHT");
+                        showNextArrow();
+                    }
+                } else {
+                    if (currentArrow.equals("LEFT")) {
+                        Log.d(TAG, "Direction correct: LEFT");
+                        showNextArrow();
+                    }                }
+            } else {
+                //Move along Y-axis
+                if (velocityY > 0) {
+                    if (currentArrow.equals("DOWN")) {
+                        Log.d(TAG, "Direction correct: DOWN");
+                        showNextArrow();
+                    }
+                } else {
+                    if (currentArrow.equals("UP")) {
+                        Log.d(TAG, "Direction correct: UP");
+                        showNextArrow();
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public void onLongPress(MotionEvent e) {
+
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+        return false;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent e) {
+        return false;
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event){
+        if (this.mDetector.onTouchEvent(event)) {
+            return true;
+        }
+        return super.onTouchEvent(event);
     }
 }
 
