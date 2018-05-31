@@ -73,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         //typing = findViewById(R.id.button_typing);
         //ddr = findViewById(R.id.button_ddr);
 
-        //nrHint = findViewById(R.id.nrhint);
+        nrHint = findViewById(R.id.nrHint);
 
         subjectNumber = prefs.getInt("subjectnr", -1);
         if(subjectNumber > 0){
@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
 
                         prefs.edit().putInt("subjectnr", subjectNumber).commit();
                         //editText.setInputType(InputType.TYPE_NULL);
-                        nrHint.setText("Subject number set to " + subjectNumber);
+                        nrHint.setText("Subject number: " + subjectNumber);
                         InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
                         //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                         mazescreen.setEnabled(true);
