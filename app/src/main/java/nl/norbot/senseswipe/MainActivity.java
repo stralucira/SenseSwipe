@@ -19,8 +19,11 @@ import android.widget.EditText;
 import android.preference.PreferenceManager;
 import android.widget.TextView;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +45,6 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    EditText editText;
     Integer subjectNumber;
     Button mazescreen, mazefingerprint, camera, typing, ddr, saveButton;
     SharedPreferences prefs;
@@ -61,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
       
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        editText = findViewById(R.id.edittext_subject_number);
         saveButton = findViewById(R.id.button_save_subject_number);
         mazescreen = findViewById(R.id.button_maze_screen);
         mazefingerprint = findViewById(R.id.button_maze_fingerprint);
@@ -78,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
             camera.setEnabled(true);
             typing.setEnabled(true);
             ddr.setEnabled(true);
-            editText.setText("" + subjectNumber);
         }
 
         // Example database push code
@@ -133,17 +133,42 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveSubjectNumber(View view) {
-        subjectNumber = Integer.parseInt(editText.getText().toString());
-        prefs.edit().putInt("subjectnr", subjectNumber).commit();
-        //editText.setInputType(InputType.TYPE_NULL);
-        nrHint.setText("Subject number set to " + editText.getText().toString());
-        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        mazescreen.setEnabled(true);
-        mazefingerprint.setEnabled(true);
-        camera.setEnabled(true);
-        typing.setEnabled(true);
-        ddr.setEnabled(true);
+        FirebaseDatabase database;
+        final DatabaseReference databasereference;
+
+        database = FirebaseDatabase.getInstance();
+        databasereference = database.getReference();
+
+        databasereference.child("latestID").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                //System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
+                Log.d("MW", "latest id: " + snapshot.getValue());
+
+
+
+                subjectNumber = Integer.parseInt(snapshot.getValue().toString()) + 1;
+
+                databasereference.child("latestID").setValue(subjectNumber);
+
+                prefs.edit().putInt("subjectnr", subjectNumber).commit();
+                //editText.setInputType(InputType.TYPE_NULL);
+                nrHint.setText("Subject number set to " + subjectNumber);
+                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                mazescreen.setEnabled(true);
+                mazefingerprint.setEnabled(true);
+                camera.setEnabled(true);
+                typing.setEnabled(true);
+                ddr.setEnabled(true);
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+            }
+        });
+
+
+
     }
 
 }
