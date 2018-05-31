@@ -2,9 +2,11 @@ package nl.norbot.senseswipe;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.Tag;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences prefs;
     TextView nrHint;
 
+    private AlertDialog.Builder alertbuilder;
 
 
     @Override
@@ -133,39 +136,58 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void saveSubjectNumber(View view) {
-        FirebaseDatabase database;
-        final DatabaseReference databasereference;
-
-        database = FirebaseDatabase.getInstance();
-        databasereference = database.getReference();
-
-        databasereference.child("latestID").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                //System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
-                Log.d("MW", "latest id: " + snapshot.getValue());
-
-
-
-                subjectNumber = Integer.parseInt(snapshot.getValue().toString()) + 1;
-
-                databasereference.child("latestID").setValue(subjectNumber);
-
-                prefs.edit().putInt("subjectnr", subjectNumber).commit();
-                //editText.setInputType(InputType.TYPE_NULL);
-                nrHint.setText("Subject number set to " + subjectNumber);
-                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                mazescreen.setEnabled(true);
-                mazefingerprint.setEnabled(true);
-                camera.setEnabled(true);
-                typing.setEnabled(true);
-                ddr.setEnabled(true);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        alertbuilder = new AlertDialog.Builder(this);
+        alertbuilder.setMessage("Are you sure?");
+        alertbuilder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
             }
         });
+
+        alertbuilder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                dialog.cancel();
+                FirebaseDatabase database;
+                final DatabaseReference databasereference;
+
+                database = FirebaseDatabase.getInstance();
+                databasereference = database.getReference();
+
+                databasereference.child("latestID").addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(DataSnapshot snapshot) {
+                        //System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
+                        Log.d("MW", "latest id: " + snapshot.getValue());
+
+
+
+                        subjectNumber = Integer.parseInt(snapshot.getValue().toString()) + 1;
+
+                        databasereference.child("latestID").setValue(subjectNumber);
+
+                        prefs.edit().putInt("subjectnr", subjectNumber).commit();
+                        //editText.setInputType(InputType.TYPE_NULL);
+                        nrHint.setText("Subject number set to " + subjectNumber);
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        //imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                        mazescreen.setEnabled(true);
+                        mazefingerprint.setEnabled(true);
+                        camera.setEnabled(true);
+                        typing.setEnabled(true);
+                        ddr.setEnabled(true);
+                    }
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                    }
+                });
+
+            }
+        });
+
+        AlertDialog alert11 = alertbuilder.create();
+        alert11.show();
+
+
 
 
 
