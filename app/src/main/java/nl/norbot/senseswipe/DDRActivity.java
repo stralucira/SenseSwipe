@@ -30,6 +30,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private boolean useFingerPrintGestures = false;
     private boolean inputEnabled = false;
     private GestureDetectorCompat mDetector;
+    long[] measurements;
     
     private int id;
     long start, end;
@@ -113,6 +114,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         hideArrows();
 
         sequence = getSequence();
+        measurements = new long[sequence.size()];
 
         alertbuilder = new AlertDialog.Builder(this);
 
@@ -122,8 +124,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
                 inputEnabled = true;
-                showArrow(sequence.get(0).direction);
-                currentArrow = sequence.get(0).direction;
+                //showArrow(sequence.get(0).direction);
+                //currentArrow = sequence.get(0).direction;
+                showNextArrow();
                 //startmaze(-1);
             }
         });
@@ -139,6 +142,10 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             completeActivity();
         }
         else {
+            end = System.currentTimeMillis();
+            long time = end - start;
+            Log.d(TAG, "Arrow hit in " + time + " msecs.");
+            measurements[arrowIndex] = time;
             hideArrows();
             String direction = sequence.get(arrowIndex).direction;
             showArrow(direction);
@@ -151,6 +158,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private void showArrow(String direction)
     {
         Log.d(TAG, "Showing arrow " + direction);
+        start = System.currentTimeMillis();
         switch (direction)
         {
             case "UP":
@@ -209,6 +217,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     }
 
     private void completeActivity() {
+        dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
         alertbuilder.setMessage("Finished the activity.");
         alertbuilder.setPositiveButton("Return to Main", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
@@ -222,6 +231,23 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
         AlertDialog ddrAlert = alertbuilder.create();
         ddrAlert.show();
+    }
+
+    public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
+
+        String inputmethod;
+        if(useFingerPrintGestures){
+            inputmethod = "fingerprint";
+        }
+        else{
+            inputmethod = "screen";
+        }
+
+        for(int i = 0 ; i < measurements.length ; i++) {
+            wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
+
+            wordIndex.child("completionTime").setValue(measurements[i]);
+        }
     }
 
     @Override

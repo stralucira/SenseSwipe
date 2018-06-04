@@ -74,7 +74,7 @@
         android:inputType="number"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button_typing"
+        app:layout_constraintTop_toBottomOf="@+id/button_ddr"
         />
 
     <Button
