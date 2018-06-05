@@ -101,7 +101,6 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
                     startnewarrow();
                 }
 
-                // TODO: Implement input handling here.
                 // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
             } catch (Exception e){
                 Log.d(TAG, e.toString());
@@ -251,7 +250,6 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     }
 
     private void startnewarrow(){
-        //TODO: log result here
 
         arrowcounter++;
         Random random = new Random();
