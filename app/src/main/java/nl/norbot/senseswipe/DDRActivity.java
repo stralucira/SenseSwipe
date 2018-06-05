@@ -109,9 +109,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         mDetector = new GestureDetectorCompat(this,this);
 
         arrowUp = findViewById(R.id.arrow_up);
-        arrowDown = findViewById(R.id.arrow_down);
-        arrowLeft = findViewById(R.id.arrow_left);
-        arrowRight = findViewById(R.id.arrow_right);
+        //arrowDown = findViewById(R.id.arrow_down);
+        //arrowLeft = findViewById(R.id.arrow_left);
+        //arrowRight = findViewById(R.id.arrow_right);
         hideArrows();
 
         sequence = getSequence();
@@ -170,15 +170,19 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         {
             case "UP":
                 arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_up);
                 break;
             case "DOWN":
-                arrowDown.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_down);
                 break;
             case "LEFT":
-                arrowLeft.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_left);
                 break;
             case "RIGHT":
-                arrowRight.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_right);
                 break;
             default:
                 break;
@@ -187,9 +191,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     private void hideArrows() {
         arrowUp.setVisibility(View.INVISIBLE);
-        arrowDown.setVisibility(View.INVISIBLE);
-        arrowLeft.setVisibility(View.INVISIBLE);
-        arrowRight.setVisibility(View.INVISIBLE);
+        //arrowDown.setVisibility(View.INVISIBLE);
+        //arrowLeft.setVisibility(View.INVISIBLE);
+        //arrowRight.setVisibility(View.INVISIBLE);
     }
 
     private List<DDRSequenceItem> getSequence() {
