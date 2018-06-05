@@ -8,6 +8,8 @@ import android.content.IntentFilter;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -43,6 +45,8 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private TextView bestTimeText, previousTimeText;
     private long bestTime = 0;
 
+    private Vibrator v;
+    int vibrationlength = 200;
 
     private FirebaseDatabase database;
     private DatabaseReference databasereference;
@@ -118,10 +122,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         databasereference = database.getReference();
         mDetector = new GestureDetectorCompat(this,this);
 
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         arrowUp = findViewById(R.id.arrow_up);
-        //arrowDown = findViewById(R.id.arrow_down);
-        //arrowLeft = findViewById(R.id.arrow_left);
-        //arrowRight = findViewById(R.id.arrow_right);
         hideArrows();
 
         bestTimeText = findViewById(R.id.bestTimeText);
@@ -364,6 +367,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     }
 
     public void onMistake() {
+        v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
         mistakeCount++;
     }
 
@@ -446,7 +450,3 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     }
 }
-
-
-
-
