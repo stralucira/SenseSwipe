@@ -30,7 +30,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private boolean useFingerPrintGestures = false;
     private boolean inputEnabled = false;
     private GestureDetectorCompat mDetector;
-    long[] measurements;
+    ArrayList<Long> measurements;
     
     private int id;
     long start, end;
@@ -115,7 +115,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         hideArrows();
 
         sequence = getSequence();
-        measurements = new long[sequence.size()];
+        measurements = new ArrayList<>();
 
         alertbuilder = new AlertDialog.Builder(this);
 
@@ -150,7 +150,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                     end = System.currentTimeMillis();
                     long time = end - start;
                     Log.d(TAG, "Arrow hit in " + time + " msecs.");
-                    measurements[arrowIndex] = time;
+                    measurements.add(time);
                 }
                 hideArrows();
                 String direction = sequence.get(arrowIndex).direction;
@@ -271,10 +271,11 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             inputmethod = "screen";
         }
 
-        for(int i = 0 ; i < measurements.length ; i++) {
+        for(int i = 0 ; i < measurements.size(); i++) {
             DatabaseReference dbIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
+            Log.d(TAG, "Writing result " + measurements.get(i) + "to db location " + dbIndex);
 
-            dbIndex.child("completionTime").setValue(measurements[i]);
+            dbIndex.child("completionTime").setValue(measurements.get(i));
         }
     }
 
