@@ -138,7 +138,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         database = FirebaseDatabase.getInstance();
         databasereference = database.getReference();
 
-        new CountDownTimer(3600000, 10) {
+        new CountDownTimer(3600000, 16) {
 
             public void onTick(long millisUntilFinished) {
                 draw((ImageView) findViewById(R.id.maze_imageviewer));
@@ -310,7 +310,6 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         DatabaseReference mazeposition = databasereference.child(Integer.toString(id)).child(inputmethod).child("Maze").child(Integer.toString(currentmaze));
         mazeposition.child("completionTime").setValue(Float.toString(timediff));
         mazeposition.child("errorRate").setValue(Integer.toString(numberOfErrors));
-        //TODO: use id from intent
     }
 
     public void moveup(View view){
@@ -642,6 +641,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
                     intent.putExtra("id", id);
                     intent.putExtra("useFingerprint", usefingerprintgestures);
                     startActivity(intent);
+                    finish();
                 }
             });
 
