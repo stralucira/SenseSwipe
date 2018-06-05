@@ -637,7 +637,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int id) {
                     dialog.cancel();
-                    Intent intent = new Intent(getBaseContext(), TypingActivity.class);
+                    Intent intent = new Intent(getBaseContext(), DDRActivity.class);
                     intent.putExtra("id", id);
                     intent.putExtra("useFingerprint", usefingerprintgestures);
                     startActivity(intent);
