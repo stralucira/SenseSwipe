@@ -32,6 +32,7 @@ public class TypingActivity extends AppCompatActivity {
     int textLength;
     int cursorOffsetFromEnd = 0;
     long start, end;
+    boolean lastRound;
 
     TextView infoText, correctWordText, correct, usageText;
 
@@ -101,7 +102,7 @@ public class TypingActivity extends AppCompatActivity {
         alertbuilder.setPositiveButton("Next", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                Intent intent = new Intent(getBaseContext(), DDRActivity.class);
                 intent.putExtra("id", id);
                 intent.putExtra("useFingerprint", useFingerPrintGestures);
                 startActivity(intent);
@@ -114,8 +115,6 @@ public class TypingActivity extends AppCompatActivity {
         } else {
             alertbuilder.setMessage("Please practice moving the cursor over the presented word using the screen!");
         }
-
-
 
         typoList = new HashMap<>();
 
