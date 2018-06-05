@@ -65,6 +65,8 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/button_camera" />
 
+    -->
+
     <Button
         android:id="@+id/button_save_subject_number"
         android:layout_width="368dp"
