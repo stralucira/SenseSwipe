@@ -14,6 +14,7 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
 import android.support.v4.content.res.ResourcesCompat;
@@ -136,6 +137,18 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
         database = FirebaseDatabase.getInstance();
         databasereference = database.getReference();
+
+        new CountDownTimer(3600000, 10) {
+
+            public void onTick(long millisUntilFinished) {
+                draw((ImageView) findViewById(R.id.maze_imageviewer));
+            }
+
+            public void onFinish() {
+
+            }
+        }.start();
+
     }
 
 
@@ -193,7 +206,15 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         finishimage.setBounds(imageBounds);
         finishimage.draw(canvas);
         //canvas.drawCircle(finishpixelpos.x, finishpixelpos.y, 50, paint);
-        paint.setColor(Color.rgb(0,0,0));
+        paint.setColor(Color.rgb(255,0,0));
+
+
+        long currenttime = System.currentTimeMillis();
+        float timediff = (currenttime - Mazestarttime) / 1000.f;
+
+        paint.setTextSize(100);
+        canvas.drawText("" + timediff, 750, 120, paint);
+
 
         view.invalidate();
 
@@ -631,4 +652,6 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
         }
         return walls;
     }
+
+
 }
