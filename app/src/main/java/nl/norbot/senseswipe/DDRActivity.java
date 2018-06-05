@@ -38,6 +38,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     long start, end;
     private int experimentStartIndex = 8;
     private boolean experimentStarted = false;
+    private int mistakeCount = 0;
 
     private TextView bestTimeText, previousTimeText;
     private long bestTime = 0;
@@ -64,6 +65,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: RIGHT");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 2:
                             // LEFT
@@ -71,6 +73,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: LEFT");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 4:
                             // UP
@@ -78,6 +81,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: UP");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 8:
                             // DOWN
@@ -85,6 +89,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: DOWN");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         default:
                             break;
@@ -148,6 +153,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     {
         if (arrowIndex == experimentStartIndex && !experimentStarted)
         {
+            inputEnabled = false;
             showPerformanceStartMessage();
         }
         else {
@@ -238,11 +244,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         list.add(new DDRSequenceItem("DOWN"));
         list.add(new DDRSequenceItem("UP"));
 
-        // Actual arrows
-        // down 8
-        // up 8
-        // left 9
-        // right 9
+        // Actual experiment
 
         list.add(new DDRSequenceItem("RIGHT"));
         list.add(new DDRSequenceItem("DOWN"));
@@ -327,6 +329,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 experimentStarted = true;
+                inputEnabled = true;
                 start = System.currentTimeMillis();
                 showNextArrow();
                 dialog.cancel();
@@ -348,12 +351,20 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             inputmethod = "screen";
         }
 
+        DatabaseReference mistakeIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR");
+        mistakeIndex.child("mistakeCount").setValue(mistakeCount);
+
         for(int i = 0 ; i < measurements.size(); i++) {
             DatabaseReference dbIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
             //Log.d(TAG, "Writing result " + measurements.get(i) + "to db location " + dbIndex);
 
+            dbIndex.child("direction").setValue(sequence.get(i + experimentStartIndex).direction);
             dbIndex.child("completionTime").setValue(measurements.get(i));
         }
+    }
+
+    public void onMistake() {
+        mistakeCount++;
     }
 
     @Override
@@ -367,11 +378,13 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                         Log.d(TAG, "Direction correct: RIGHT");
                         showNextArrow();
                     }
+                    else onMistake();
                 } else {
                     if (currentArrow.equals("LEFT")) {
                         Log.d(TAG, "Direction correct: LEFT");
                         showNextArrow();
-                    }                }
+                    }
+                    else onMistake();}
             } else {
                 //Move along Y-axis
                 if (velocityY > 0) {
@@ -379,11 +392,13 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                         Log.d(TAG, "Direction correct: DOWN");
                         showNextArrow();
                     }
+                    else onMistake();
                 } else {
                     if (currentArrow.equals("UP")) {
                         Log.d(TAG, "Direction correct: UP");
                         showNextArrow();
                     }
+                    else onMistake();
                 }
             }
         }
