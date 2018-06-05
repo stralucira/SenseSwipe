@@ -6,4 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".DDR_scrollingActivity">
 
+    <ImageView
+        android:id="@+id/DDR_imageview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:srcCompat="@android:drawable/btn_star_big_on"
+        tools:layout_editor_absoluteX="77dp"
+        tools:layout_editor_absoluteY="79dp" />
 </android.support.constraint.ConstraintLayout>

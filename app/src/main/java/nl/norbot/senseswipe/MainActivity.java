@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
     public void startDDRScrollActivity(View view) {
         Intent intent = new Intent(this, DDR_scrollingActivity.class);
         intent.putExtra("id", subjectNumber);
-        intent.putExtra("useFingerprint", false);
+        intent.putExtra("useFingerprint", true);
         startActivity(intent);
     }
 

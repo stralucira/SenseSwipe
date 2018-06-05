@@ -53,6 +53,8 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     int currentarrowposition;
     int currentarrowdistance;
 
+    int arrowcounter = 0;
+
     private Drawable arrowimage;
 
     private Drawable arrowup;
@@ -72,6 +74,32 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         public void onReceive(Context context, Intent intent) {
             try {
                 Log.d(TAG, Integer.toString(intent.getIntExtra("gesture_id", 0)));
+
+                int direction = intent.getIntExtra("gesture_id", 0);
+                if(usefingerprintgestures) {
+                    boolean correct = false;
+                    if (direction == 2) {
+                        //LEFT
+                        if(currentarrowdirection == 2) correct = true;
+                    }
+                    if (direction == 8) {
+                        //DOWN
+                        if(currentarrowdirection == 1) correct = true;
+                    }
+                    if (direction == 1) {
+                        //RIGHT
+                        if(currentarrowdirection == 3) correct = true;
+                    }
+                    if (direction == 4) {
+                        //UP
+                        if(currentarrowdirection == 0) correct = true;
+                    }
+
+                    //REPORT TO DATABASE
+
+                    savetodatabase(currentarrowdirection, currentarrowdistance, correct, arrowcounter);
+                    startnewarrow();
+                }
 
                 // TODO: Implement input handling here.
                 // For direction codes see https://developer.android.com/reference/android/accessibilityservice/FingerprintGestureController#FINGERPRINT_GESTURE_SWIPE_DOWN
@@ -221,6 +249,8 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
 
     private void startnewarrow(){
         //TODO: log result here
+
+        arrowcounter++;
         Random random = new Random();
         int direction = random.nextInt(4);
 
@@ -277,9 +307,91 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
         Log.d("MW", "Fling gesture received");
         if (usescreengestures) {
-            startnewarrow();
+            boolean correct = false;
+
+            if (Math.abs(velocityX) > Math.abs(velocityY)) {
+                //Move along X-axis
+                if (velocityX > 0) {
+                    //RIGHT
+                    if(currentarrowdirection == 3){
+                        //Correct
+                        correct = true;
+                    }
+                    else{
+                        //Incorrect
+                    }
+                } else {
+                    //LEFT
+                    if(currentarrowdirection == 2){
+                        //Correct
+                        correct = true;
+
+                    }
+                    else{
+                        //Incorrect
+                    }
+                }
+            } else {
+                //Move along Y-axis
+                if (velocityY > 0) {
+                    //DOWN
+                    if(currentarrowdirection == 1){
+                        //Correct
+                        correct = true;
+
+                    }
+                    else{
+                        //Incorrect
+                    }
+                } else {
+                    //UP
+                    if(currentarrowdirection == 0){
+                        //Correct
+                        correct = true;
+
+                    }
+                    else{
+                        //Incorrect
+                    }
+                }
+            }
+            //REPORT TO DATABASE
+
+        savetodatabase(currentarrowdirection, currentarrowdistance, correct, arrowcounter);
+        startnewarrow();
+
+
         }
         return false;
+    }
+
+    private void savetodatabase(int arrowdirection, int distance, boolean correct, int arrowid){
+        String inputmethod = "screen";
+
+        if(usefingerprintgestures){
+            inputmethod = "fingerprint";
+        }
+
+        String direction = "";
+        if(arrowdirection == 0){
+            direction = "up";
+        }
+        if(arrowdirection == 1){
+            direction = "down";
+        }
+        if(arrowdirection == 2){
+            direction = "left";
+        }
+        if(arrowdirection == 3){
+            direction = "right";
+        }
+
+
+        DatabaseReference mazeposition = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR_Scroll").child(Integer.toString(arrowid));
+        mazeposition.child("Distance").setValue(Integer.toString(distance));
+        mazeposition.child("Arrowdirection").setValue(direction);
+        mazeposition.child("Correct").setValue(correct);
+
     }
 
     @Override
