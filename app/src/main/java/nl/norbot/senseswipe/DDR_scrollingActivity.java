@@ -47,7 +47,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     Point goalposition = new Point(500,500);
     Point arrowstartposition = new Point(500,500);
 
-    private int screenWidth, screenHeight;
+    private int screenWidth = 0, screenHeight = 0;
 
     int currentarrowdirection;
     int currentarrowposition;
@@ -142,8 +142,8 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         arrowright = getResources().getDrawable(resourceid);
 
 
-        if(usefingerprintgestures) alertbuilder.setMessage("Message fp.");
-        else alertbuilder.setMessage("Message screen.");
+        if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprintscanner when the arrow is in the box.");
+        else alertbuilder.setMessage("Swipe the screen when the arrow is in the box.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -252,25 +252,45 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     private void startnewarrow(){
 
         arrowcounter++;
-        Random random = new Random();
-        int direction = random.nextInt(4);
 
-        currentarrowdirection = direction;
+        if(arrowcounter >= 20){
+            alertbuilder.setMessage("Thank you for participating :)");
+            alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    dialog.cancel();
+                    finish();
+                }
+            });
 
-        if(direction == 0){
-            arrowimage = arrowup;
-        }
-        if(direction == 1){
-            arrowimage = arrowdown;
-        }
-        if(direction == 2){
-            arrowimage = arrowleft;
-        }
-        if(direction == 3){
-            arrowimage = arrowright;
-        }
+            speed = 0;
 
-        currentarrowposition = 0;
+            AlertDialog alert11 = alertbuilder.create();
+            alert11.show();
+
+        }
+        else {
+
+
+            Random random = new Random();
+            int direction = random.nextInt(4);
+
+            currentarrowdirection = direction;
+
+            if (direction == 0) {
+                arrowimage = arrowup;
+            }
+            if (direction == 1) {
+                arrowimage = arrowdown;
+            }
+            if (direction == 2) {
+                arrowimage = arrowleft;
+            }
+            if (direction == 3) {
+                arrowimage = arrowright;
+            }
+
+            currentarrowposition = 0;
+        }
     }
 
     @Override
