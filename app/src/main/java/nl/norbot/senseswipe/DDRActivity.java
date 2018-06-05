@@ -34,11 +34,12 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     
     private int id;
     long start, end;
+    private int experimentStartIndex = 4;
+    private boolean experimentStarted = false;
 
 
     private FirebaseDatabase database;
     private DatabaseReference databasereference;
-    DatabaseReference wordIndex;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -118,8 +119,8 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
         alertbuilder = new AlertDialog.Builder(this);
 
-        if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible.");
-        else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible.");
+        if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
+        else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -137,21 +138,27 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     private void showNextArrow()
     {
-        if (arrowIndex >= sequence.size())
+        if (arrowIndex == experimentStartIndex && !experimentStarted)
         {
-            completeActivity();
+            showPerformanceStartMessage();
         }
         else {
-            end = System.currentTimeMillis();
-            long time = end - start;
-            Log.d(TAG, "Arrow hit in " + time + " msecs.");
-            measurements[arrowIndex] = time;
-            hideArrows();
-            String direction = sequence.get(arrowIndex).direction;
-            showArrow(direction);
-            currentArrow = direction;
-            Log.d(TAG, "Next arrow: " + direction);
-            arrowIndex++;
+            if (arrowIndex >= sequence.size()) {
+                completeActivity();
+            } else {
+                if (arrowIndex != 0) {
+                    end = System.currentTimeMillis();
+                    long time = end - start;
+                    Log.d(TAG, "Arrow hit in " + time + " msecs.");
+                    measurements[arrowIndex] = time;
+                }
+                hideArrows();
+                String direction = sequence.get(arrowIndex).direction;
+                showArrow(direction);
+                currentArrow = direction;
+                Log.d(TAG, "Next arrow: " + direction);
+                arrowIndex++;
+            }
         }
     }
 
@@ -188,11 +195,14 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private List<DDRSequenceItem> getSequence() {
         List<DDRSequenceItem> list = new ArrayList<DDRSequenceItem>();
 
-        list.add(new DDRSequenceItem(0, "UP"));
-        list.add(new DDRSequenceItem(2000, "RIGHT"));
-        list.add(new DDRSequenceItem(2000, "DOWN"));
-        list.add(new DDRSequenceItem(2000, "LEFT"));
-
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
         return list;
     }
 
@@ -233,6 +243,20 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         ddrAlert.show();
     }
 
+    private void showPerformanceStartMessage() {
+        alertbuilder.setMessage("Intro completed! Performance will be measured from now on. Please pres OK when you're ready.");
+        alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                experimentStarted = true;
+                showNextArrow();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog ddrAlert = alertbuilder.create();
+        ddrAlert.show();
+    }
+
     public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
 
         String inputmethod;
@@ -244,9 +268,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         }
 
         for(int i = 0 ; i < measurements.length ; i++) {
-            wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
+            DatabaseReference dbIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
 
-            wordIndex.child("completionTime").setValue(measurements[i]);
+            dbIndex.child("completionTime").setValue(measurements[i]);
         }
     }
 

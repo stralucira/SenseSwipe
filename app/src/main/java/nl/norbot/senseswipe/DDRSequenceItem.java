@@ -10,4 +10,9 @@ public class DDRSequenceItem
         this.startDelay = startDelay;
         this.direction = direction;
     }
+
+    public DDRSequenceItem(String direction)
+    {
+        this.direction = direction;
+    }
 }
