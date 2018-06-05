@@ -16,6 +16,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -34,8 +35,11 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     
     private int id;
     long start, end;
-    private int experimentStartIndex = 4;
+    private int experimentStartIndex = 8;
     private boolean experimentStarted = false;
+
+    private TextView bestTimeText, previousTimeText;
+    private long bestTime = 0;
 
 
     private FirebaseDatabase database;
@@ -114,6 +118,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         //arrowRight = findViewById(R.id.arrow_right);
         hideArrows();
 
+        bestTimeText = findViewById(R.id.bestTimeText);
+        previousTimeText = findViewById(R.id.previousTimeText);
+
         sequence = getSequence();
         measurements = new ArrayList<>();
 
@@ -146,11 +153,20 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             if (arrowIndex >= sequence.size()) {
                 completeActivity();
             } else {
-                if (arrowIndex != 0) {
+                if (arrowIndex > experimentStartIndex) {
                     end = System.currentTimeMillis();
                     long time = end - start;
-                    Log.d(TAG, "Arrow hit in " + time + " msecs.");
                     measurements.add(time);
+                    start = System.currentTimeMillis();
+                    Log.d(TAG, "Arrow hit in " + time + " msecs.");
+                    String previousText = "Previous time: " + time + "s";
+                    previousTimeText.setText(previousText);
+                    if (bestTime == 0 || time < bestTime)
+                    {
+                        bestTime = time;
+                        String bestText = "Best time: " + time + "s";
+                        bestTimeText.setText(bestText);
+                    }
                 }
                 hideArrows();
                 String direction = sequence.get(arrowIndex).direction;
@@ -165,7 +181,6 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private void showArrow(String direction)
     {
         Log.d(TAG, "Showing arrow " + direction);
-        start = System.currentTimeMillis();
         switch (direction)
         {
             case "UP":
@@ -199,6 +214,8 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private List<DDRSequenceItem> getSequence() {
         List<DDRSequenceItem> list = new ArrayList<DDRSequenceItem>();
 
+        // Tutorial arrows
+
         list.add(new DDRSequenceItem("UP"));
         list.add(new DDRSequenceItem("RIGHT"));
         list.add(new DDRSequenceItem("DOWN"));
@@ -207,6 +224,48 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         list.add(new DDRSequenceItem("LEFT"));
         list.add(new DDRSequenceItem("DOWN"));
         list.add(new DDRSequenceItem("UP"));
+
+        // Actual arrows
+        // down 8
+        // up 8
+        // left 9
+        // right 9
+
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
         return list;
     }
 
@@ -231,6 +290,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     }
 
     private void completeActivity() {
+        end = System.currentTimeMillis();
+        long time = end - start;
+        measurements.add(time);
         dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
         alertbuilder.setMessage("Finished the activity.");
         alertbuilder.setPositiveButton("Return to Main", new DialogInterface.OnClickListener() {
@@ -252,6 +314,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 experimentStarted = true;
+                start = System.currentTimeMillis();
                 showNextArrow();
                 dialog.cancel();
             }
@@ -263,6 +326,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
 
+        Log.d(TAG, "Writing results to Firebase with measurements size " + measurements.size());
         String inputmethod;
         if(useFingerPrintGestures){
             inputmethod = "fingerprint";
