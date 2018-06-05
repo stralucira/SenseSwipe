@@ -231,6 +231,9 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         currentarrowdistance = arrowstartposition.y + currentarrowposition - goalposition.y;
 
         if(arrowstartposition.y + currentarrowposition > screenHeight){
+            //Arrow outside of window
+
+            savetodatabase(currentarrowdirection, 99999, false,arrowcounter);
             startnewarrow();
         }
 
