@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.view.GestureDetectorCompat;
@@ -169,8 +170,19 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                     }
                 }
                 hideArrows();
-                String direction = sequence.get(arrowIndex).direction;
-                showArrow(direction);
+                final String direction = sequence.get(arrowIndex).direction;
+
+                new CountDownTimer(500, 10) {
+
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    public void onFinish() {
+                        showArrow(direction);
+                    }
+                }.start();
+
+                //showArrow(direction);
                 currentArrow = direction;
                 Log.d(TAG, "Next arrow: " + direction);
                 arrowIndex++;
@@ -181,6 +193,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private void showArrow(String direction)
     {
         Log.d(TAG, "Showing arrow " + direction);
+        start = System.currentTimeMillis();
         switch (direction)
         {
             case "UP":
@@ -337,7 +350,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
         for(int i = 0 ; i < measurements.size(); i++) {
             DatabaseReference dbIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
-            Log.d(TAG, "Writing result " + measurements.get(i) + "to db location " + dbIndex);
+            //Log.d(TAG, "Writing result " + measurements.get(i) + "to db location " + dbIndex);
 
             dbIndex.child("completionTime").setValue(measurements.get(i));
         }
