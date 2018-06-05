@@ -290,7 +290,6 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             currentmaze++;
             startmaze(currentmaze);
         }
-
     }
 
     public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){

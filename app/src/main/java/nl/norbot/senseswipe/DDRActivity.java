@@ -5,8 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -16,6 +19,7 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -30,15 +34,22 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     private boolean useFingerPrintGestures = false;
     private boolean inputEnabled = false;
     private GestureDetectorCompat mDetector;
-    long[] measurements;
+    ArrayList<Long> measurements;
     
     private int id;
     long start, end;
+    private int experimentStartIndex = 8;
+    private boolean experimentStarted = false;
+    private int mistakeCount = 0;
 
+    private TextView bestTimeText, previousTimeText;
+    private long bestTime = 0;
+
+    private Vibrator v;
+    int vibrationlength = 200;
 
     private FirebaseDatabase database;
     private DatabaseReference databasereference;
-    DatabaseReference wordIndex;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -58,6 +69,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: RIGHT");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 2:
                             // LEFT
@@ -65,6 +77,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: LEFT");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 4:
                             // UP
@@ -72,6 +85,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: UP");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         case 8:
                             // DOWN
@@ -79,6 +93,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                                 Log.d(TAG, "Direction correct: DOWN");
                                 showNextArrow();
                             }
+                            else onMistake();
                             break;
                         default:
                             break;
@@ -107,19 +122,21 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         databasereference = database.getReference();
         mDetector = new GestureDetectorCompat(this,this);
 
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         arrowUp = findViewById(R.id.arrow_up);
-        arrowDown = findViewById(R.id.arrow_down);
-        arrowLeft = findViewById(R.id.arrow_left);
-        arrowRight = findViewById(R.id.arrow_right);
         hideArrows();
 
+        bestTimeText = findViewById(R.id.bestTimeText);
+        previousTimeText = findViewById(R.id.previousTimeText);
+
         sequence = getSequence();
-        measurements = new long[sequence.size()];
+        measurements = new ArrayList<>();
 
         alertbuilder = new AlertDialog.Builder(this);
 
-        if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible.");
-        else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible.");
+        if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
+        else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
@@ -137,21 +154,48 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     private void showNextArrow()
     {
-        if (arrowIndex >= sequence.size())
+        if (arrowIndex == experimentStartIndex && !experimentStarted)
         {
-            completeActivity();
+            inputEnabled = false;
+            showPerformanceStartMessage();
         }
         else {
-            end = System.currentTimeMillis();
-            long time = end - start;
-            Log.d(TAG, "Arrow hit in " + time + " msecs.");
-            measurements[arrowIndex] = time;
-            hideArrows();
-            String direction = sequence.get(arrowIndex).direction;
-            showArrow(direction);
-            currentArrow = direction;
-            Log.d(TAG, "Next arrow: " + direction);
-            arrowIndex++;
+            if (arrowIndex >= sequence.size()) {
+                completeActivity();
+            } else {
+                if (arrowIndex > experimentStartIndex) {
+                    end = System.currentTimeMillis();
+                    long time = end - start;
+                    measurements.add(time);
+                    start = System.currentTimeMillis();
+                    Log.d(TAG, "Arrow hit in " + time + " msecs.");
+                    String previousText = "Previous time: " + time + "s";
+                    previousTimeText.setText(previousText);
+                    if (bestTime == 0 || time < bestTime)
+                    {
+                        bestTime = time;
+                        String bestText = "Best time: " + time + "s";
+                        bestTimeText.setText(bestText);
+                    }
+                }
+                hideArrows();
+                final String direction = sequence.get(arrowIndex).direction;
+
+                new CountDownTimer(500, 10) {
+
+                    public void onTick(long millisUntilFinished) {
+                    }
+
+                    public void onFinish() {
+                        showArrow(direction);
+                    }
+                }.start();
+
+                //showArrow(direction);
+                currentArrow = direction;
+                Log.d(TAG, "Next arrow: " + direction);
+                arrowIndex++;
+            }
         }
     }
 
@@ -163,15 +207,19 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         {
             case "UP":
                 arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_up);
                 break;
             case "DOWN":
-                arrowDown.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_down);
                 break;
             case "LEFT":
-                arrowLeft.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_left);
                 break;
             case "RIGHT":
-                arrowRight.setVisibility(View.VISIBLE);
+                arrowUp.setVisibility(View.VISIBLE);
+                arrowUp.setImageResource(R.drawable.graphic_arrow_right);
                 break;
             default:
                 break;
@@ -180,19 +228,62 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     private void hideArrows() {
         arrowUp.setVisibility(View.INVISIBLE);
-        arrowDown.setVisibility(View.INVISIBLE);
-        arrowLeft.setVisibility(View.INVISIBLE);
-        arrowRight.setVisibility(View.INVISIBLE);
+        //arrowDown.setVisibility(View.INVISIBLE);
+        //arrowLeft.setVisibility(View.INVISIBLE);
+        //arrowRight.setVisibility(View.INVISIBLE);
     }
 
     private List<DDRSequenceItem> getSequence() {
         List<DDRSequenceItem> list = new ArrayList<DDRSequenceItem>();
 
-        list.add(new DDRSequenceItem(0, "UP"));
-        list.add(new DDRSequenceItem(2000, "RIGHT"));
-        list.add(new DDRSequenceItem(2000, "DOWN"));
-        list.add(new DDRSequenceItem(2000, "LEFT"));
+        // Tutorial arrows
 
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
+
+        // Actual experiment
+
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("DOWN"));
+        list.add(new DDRSequenceItem("LEFT"));
+        list.add(new DDRSequenceItem("UP"));
+        list.add(new DDRSequenceItem("RIGHT"));
+        list.add(new DDRSequenceItem("DOWN"));
         return list;
     }
 
@@ -217,6 +308,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     }
 
     private void completeActivity() {
+        end = System.currentTimeMillis();
+        long time = end - start;
+        measurements.add(time);
         dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
         alertbuilder.setMessage("Finished the activity.");
         alertbuilder.setPositiveButton("Return to Main", new DialogInterface.OnClickListener() {
@@ -233,8 +327,25 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         ddrAlert.show();
     }
 
+    private void showPerformanceStartMessage() {
+        alertbuilder.setMessage("Intro completed! Performance will be measured from now on. Please pres OK when you're ready.");
+        alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                experimentStarted = true;
+                inputEnabled = true;
+                start = System.currentTimeMillis();
+                showNextArrow();
+                dialog.cancel();
+            }
+        });
+
+        AlertDialog ddrAlert = alertbuilder.create();
+        ddrAlert.show();
+    }
+
     public void dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks(){
 
+        Log.d(TAG, "Writing results to Firebase with measurements size " + measurements.size());
         String inputmethod;
         if(useFingerPrintGestures){
             inputmethod = "fingerprint";
@@ -243,11 +354,21 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
             inputmethod = "screen";
         }
 
-        for(int i = 0 ; i < measurements.length ; i++) {
-            wordIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
+        DatabaseReference mistakeIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR");
+        mistakeIndex.child("mistakeCount").setValue(mistakeCount);
 
-            wordIndex.child("completionTime").setValue(measurements[i]);
+        for(int i = 0 ; i < measurements.size(); i++) {
+            DatabaseReference dbIndex = databasereference.child(Integer.toString(id)).child(inputmethod).child("DDR").child(Integer.toString(i));
+            //Log.d(TAG, "Writing result " + measurements.get(i) + "to db location " + dbIndex);
+
+            dbIndex.child("direction").setValue(sequence.get(i + experimentStartIndex).direction);
+            dbIndex.child("completionTime").setValue(measurements.get(i));
         }
+    }
+
+    public void onMistake() {
+        v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+        mistakeCount++;
     }
 
     @Override
@@ -261,11 +382,13 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                         Log.d(TAG, "Direction correct: RIGHT");
                         showNextArrow();
                     }
+                    else onMistake();
                 } else {
                     if (currentArrow.equals("LEFT")) {
                         Log.d(TAG, "Direction correct: LEFT");
                         showNextArrow();
-                    }                }
+                    }
+                    else onMistake();}
             } else {
                 //Move along Y-axis
                 if (velocityY > 0) {
@@ -273,11 +396,13 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
                         Log.d(TAG, "Direction correct: DOWN");
                         showNextArrow();
                     }
+                    else onMistake();
                 } else {
                     if (currentArrow.equals("UP")) {
                         Log.d(TAG, "Direction correct: UP");
                         showNextArrow();
                     }
+                    else onMistake();
                 }
             }
         }
@@ -325,7 +450,3 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
     }
 }
-
-
-
-
