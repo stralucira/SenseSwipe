@@ -317,10 +317,11 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
         alertbuilder.setMessage("Finished the activity.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int id) {
+            public void onClick(DialogInterface dialog, int which) {
                 dialog.cancel();
                 Intent intent = new Intent(getBaseContext(), DDR_scrollingActivity.class);
                 intent.putExtra("id", id);
+                Log.d("ID", "" + id);
                 intent.putExtra("useFingerprint", useFingerPrintGestures);
                 startActivity(intent);
                 finish();

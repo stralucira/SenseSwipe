@@ -245,10 +245,11 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
             startnewarrow();
         }
 
-
+        /*
+        //Draw the current distance
         paint.setTextSize(100);
         canvas.drawText("" + currentarrowdistance, 750, 120, paint);
-
+        */
 
         view.invalidate();
 

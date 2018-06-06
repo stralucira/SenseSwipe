@@ -637,7 +637,7 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
             */
             alertbuilder.setMessage("Finished all mazes");
             alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                public void onClick(DialogInterface dialog, int id) {
+                public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                     Intent intent = new Intent(getBaseContext(), DDRActivity.class);
                     intent.putExtra("id", id);
