@@ -332,7 +332,7 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
     }
 
     private void showPerformanceStartMessage() {
-        alertbuilder.setMessage("Intro completed! Performance will be measured from now on. Please pres OK when you're ready.");
+        alertbuilder.setMessage("Intro completed! Performance will be measured from now on. Please press OK when you're ready.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 experimentStarted = true;
