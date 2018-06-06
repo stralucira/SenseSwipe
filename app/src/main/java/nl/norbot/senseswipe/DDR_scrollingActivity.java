@@ -133,6 +133,8 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         int resourceid = getResources().getIdentifier("graphic_arrow_down", "drawable", this.getPackageName());
 
         arrowimage = getResources().getDrawable(resourceid);
+        currentarrowdirection = 1;
+
         arrowdown = getResources().getDrawable(resourceid);
 
         resourceid = getResources().getIdentifier("graphic_arrow_up", "drawable", this.getPackageName());
