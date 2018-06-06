@@ -135,6 +135,9 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
 
         alertbuilder = new AlertDialog.Builder(this);
 
+        alertbuilder.setCancelable(false);
+
+
         if(useFingerPrintGestures) alertbuilder.setMessage("Swipe the fingerprint sensor in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
         else alertbuilder.setMessage("Swipe the screen in the direction of the arrows on the screen as fast as possible. You can practice on the first " + experimentStartIndex + " arrows.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
@@ -313,13 +316,14 @@ public class DDRActivity extends AppCompatActivity implements GestureDetector.On
         measurements.add(time);
         dearProgramWouldYouPleaseSubmitTheResultsOfTheCurrentMazeToTheDatabaseOkThanks();
         alertbuilder.setMessage("Finished the activity.");
-        alertbuilder.setPositiveButton("Return to Main", new DialogInterface.OnClickListener() {
+        alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 dialog.cancel();
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                Intent intent = new Intent(getBaseContext(), DDR_scrollingActivity.class);
                 intent.putExtra("id", id);
                 intent.putExtra("useFingerprint", useFingerPrintGestures);
                 startActivity(intent);
+                finish();
             }
         });
 

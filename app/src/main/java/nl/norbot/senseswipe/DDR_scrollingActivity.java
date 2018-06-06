@@ -128,7 +128,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         databasereference = database.getReference();
 
         alertbuilder = new AlertDialog.Builder(this);
-
+        alertbuilder.setCancelable(false);
 
         int resourceid = getResources().getIdentifier("graphic_arrow_down", "drawable", this.getPackageName());
 
@@ -146,6 +146,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         resourceid = getResources().getIdentifier("graphic_arrow_right", "drawable", this.getPackageName());
 
         arrowright = getResources().getDrawable(resourceid);
+        v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
 
         if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprintscanner when the arrow is in the box.");

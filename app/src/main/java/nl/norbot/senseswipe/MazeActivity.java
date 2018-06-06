@@ -118,6 +118,9 @@ public class MazeActivity extends AppCompatActivity implements GestureDetector.O
 
         alertbuilder = new AlertDialog.Builder(this);
 
+        alertbuilder.setCancelable(false);
+
+
         if(usefingerprintgestures) alertbuilder.setMessage("Swipe the fingerprint sensor to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
         else alertbuilder.setMessage("Swipe the screen to move the dot to the finish as fast as possible. The first maze counts as a practice area.");
         alertbuilder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
