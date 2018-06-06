@@ -30,7 +30,7 @@ if __name__ == "__main__":
        
 
         pprint(value)
-        pprint(processed_data)
+        pprint(processed_DDR_data)
 
         # with open(csv_file_path, 'w+') as f:
         #     writer = csv.DictWriter(f, header, quoting=csv.QUOTE_ALL)

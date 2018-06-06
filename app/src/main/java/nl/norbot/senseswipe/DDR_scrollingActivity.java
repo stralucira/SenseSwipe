@@ -14,6 +14,8 @@ import android.graphics.Point;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.os.CountDownTimer;
+import android.os.VibrationEffect;
+import android.os.Vibrator;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -40,6 +42,10 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
     private Canvas canvas;
     private Paint paint = new Paint();
     private Bitmap bitmap;
+    private int mistakeCount = 0;
+
+    private Vibrator v;
+    int vibrationlength = 200;
 
     private AlertDialog.Builder alertbuilder;
 
@@ -293,6 +299,11 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
         }
     }
 
+    public void onMistake() {
+        v.vibrate(VibrationEffect.createOneShot(vibrationlength,VibrationEffect.DEFAULT_AMPLITUDE));
+        mistakeCount++;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event){
         if (this.mDetector.onTouchEvent(event)) {
@@ -339,7 +350,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
                         correct = true;
                     }
                     else{
-                        //Incorrect
+                        onMistake();
                     }
                 } else {
                     //LEFT
@@ -349,7 +360,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
 
                     }
                     else{
-                        //Incorrect
+                        onMistake();
                     }
                 }
             } else {
@@ -362,7 +373,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
 
                     }
                     else{
-                        //Incorrect
+                        onMistake();
                     }
                 } else {
                     //UP
@@ -372,7 +383,7 @@ public class DDR_scrollingActivity extends AppCompatActivity implements GestureD
 
                     }
                     else{
-                        //Incorrect
+                        onMistake();
                     }
                 }
             }
