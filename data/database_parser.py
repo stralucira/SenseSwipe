@@ -16,24 +16,24 @@ def to_string(s):
         return s.encode('utf-8')
 
 if __name__ == "__main__":
-        with open('data.json') as f:
-            data = json.load(f)
+    with open('data.json') as f:
+        data = json.load(f)
 
-        processed_DDR_data = collections.defaultdict(list)
+    processed_DDR_data = []
 
-        value = data["0"]["screen"]["DDR"]["0"]["completionTime"]
-
-        for x in xrange(1, participant_count):
-            for turn in xrange(0, turn_count):
-                value = data[str(x)]["screen"]["DDR"][str(turn_count)]["completionTime"]
-                processed_DDR_data["User_" + str(x) + "_DDR_completionTime"].append(value)
+    for x in range(15, 17):
+        for turn in range(0, 5):
+            value = data[str(x)]["screen"]["DDR"][str(turn)]["completionTime"]
+            tup1 = ("User_" + str(x) + "_DDR_completionTime" , value )
+            processed_DDR_data.append(tup1)
        
+    #pprint(value)
+    #pprint(processed_DDR_data)
 
-        pprint(value)
-        pprint(processed_DDR_data)
-
-        # with open(csv_file_path, 'w+') as f:
-        #     writer = csv.DictWriter(f, header, quoting=csv.QUOTE_ALL)
-        #     writer.writeheader()
-        #     for row in processed_DDR_data:
-        #         writer.writerow(row)
+    with open(csv_file_path, 'w+') as f:
+        #fieldnames = ['measurement_name' , 'measurement']
+        writer = csv.writer(f)
+        
+        for row in processed_DDR_data:
+            pprint(row)
+            writer.writerow(row)
