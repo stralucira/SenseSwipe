@@ -74,21 +74,38 @@ public class MainActivity extends AppCompatActivity {
         //ddr = findViewById(R.id.button_ddr);
 
         nrHint = findViewById(R.id.nrHint);
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference();
+        myRef.child("latestID").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+                //System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
+                Log.d("MW", "latest id: " + snapshot.getValue());
 
-        subjectNumber = prefs.getInt("subjectnr", -1);
-        if(subjectNumber > 0){
+
+                subjectNumber = Integer.parseInt(snapshot.getValue().toString());
+                nrHint.setText("Subject number: " + subjectNumber);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+        mazefingerprint.setEnabled(true);
+
+        /*if(subjectNumber > 0){
             mazescreen.setEnabled(true);
             mazefingerprint.setEnabled(true);
+            //nrHint.setText("Subject number: " + subjectNumber);
             //camera.setEnabled(true);
             //typing.setEnabled(true);
             //ddr.setEnabled(true);
-        }
+        }*/
 
         // Example database push code
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("message");
 
-        myRef.setValue("Hello, World!");
+
     }
 
     protected void onResume() {
@@ -109,6 +126,8 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("id", subjectNumber);
         intent.putExtra("useFingerprint", false);
         startActivity(intent);
+        mazescreen.setEnabled(false);
+        mazefingerprint.setEnabled(true);
     }
 
     public void startMazeActivityFingerprint(View view) {
@@ -116,6 +135,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("id", subjectNumber);
         intent.putExtra("useFingerprint", true);
         startActivity(intent);
+
     }
 
     public void startCameraActivity(View view) {
