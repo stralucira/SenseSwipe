@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.preference.PreferenceManager;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
@@ -75,7 +76,8 @@ public class MainActivity extends AppCompatActivity {
 
         nrHint = findViewById(R.id.nrHint);
         nrHint.setText("Subject number: " + subjectNumber);
-        mazefingerprint.setEnabled(true);
+        mazefingerprint.setEnabled(false);
+        mazescreen.setEnabled(false);
 
         /*if(subjectNumber > 0){
             mazescreen.setEnabled(true);
@@ -110,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("useFingerprint", false);
         startActivity(intent);
         mazescreen.setEnabled(false);
-        mazefingerprint.setEnabled(true);
+        //mazefingerprint.setEnabled(true);
     }
 
     public void startMazeActivityFingerprint(View view) {
@@ -118,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("id", subjectNumber);
         intent.putExtra("useFingerprint", true);
         startActivity(intent);
-
+        mazefingerprint.setEnabled(false);
     }
 
     public void startCameraActivity(View view) {
@@ -174,6 +176,9 @@ public class MainActivity extends AppCompatActivity {
                         subjectNumber = Integer.parseInt(snapshot.getValue().toString()) + 1;
 
                         databasereference.child("latestID").setValue(subjectNumber);
+
+                        Spinner spinner = findViewById(R.id.spinner);
+                        databasereference.child("" + subjectNumber).child("phone").setValue(spinner.getSelectedItem());
 
                         prefs.edit().putInt("subjectnr", subjectNumber).commit();
                         //editText.setInputType(InputType.TYPE_NULL);

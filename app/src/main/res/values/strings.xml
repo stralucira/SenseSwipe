@@ -10,4 +10,10 @@
     <string name="title_activity_camera">Camera</string>
     <string name="title_activity_typing">Typing</string>
     <string name="title_activity_ddr">DDR</string>
+
+    <string-array name="phones">
+        <item>Edwin</item>
+        <item>Dimas</item>
+        <item>Milan</item>
+    </string-array>
 </resources>
