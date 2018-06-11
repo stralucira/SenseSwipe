@@ -74,24 +74,7 @@ public class MainActivity extends AppCompatActivity {
         //ddr = findViewById(R.id.button_ddr);
 
         nrHint = findViewById(R.id.nrHint);
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference();
-        myRef.child("latestID").addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                //System.out.println(snapshot.getValue());  //prints "Do you have data? You'll love Firebase."
-                Log.d("MW", "latest id: " + snapshot.getValue());
-
-
-                subjectNumber = Integer.parseInt(snapshot.getValue().toString());
-                nrHint.setText("Subject number: " + subjectNumber);
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-            }
-        });
+        nrHint.setText("Subject number: " + subjectNumber);
         mazefingerprint.setEnabled(true);
 
         /*if(subjectNumber > 0){
